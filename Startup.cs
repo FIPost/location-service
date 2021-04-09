@@ -25,6 +25,8 @@ namespace LocatieService
         public void ConfigureServices(IServiceCollection services)
         {
             var connection = Configuration.GetConnectionString("DefaultConnection");
+
+            // Add context
             services.AddDbContext<LocatieContext>(
                 options => options.UseSqlServer(connection));
 
@@ -35,13 +37,19 @@ namespace LocatieService
             });
 
             //Inject converter.
-            services.AddScoped<IDtoConverter<Locatie, LocatieRequest, LocatieResponse>, DtoConverter>();
+            services.AddScoped<IDtoConverter<Institution, InstitutionRequest, InstitutionResponse>, InstitutionDtoConverter>();
+            services.AddScoped<IDtoConverter<City, CityRequest, CityResponse>, CityDtoConverter>();
+            services.AddScoped<IDtoConverter<Address, AddressRequest, AddressResponse>, AddressDtoConverter>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, LocatieContext context)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env,
+            LocatieContext addressContext)
         {
-            context.Database.Migrate();
+            if (!addressContext.Database.EnsureCreated())
+            {
+                addressContext.Database.Migrate();
+            }
 
             if (env.IsDevelopment())
             {
