@@ -41,6 +41,7 @@ namespace LocatieService
             services.AddScoped<IDtoConverter<City, CityRequest, CityResponse>, CityDtoConverter>();
             services.AddScoped<IDtoConverter<Address, AddressRequest, AddressResponse>, AddressDtoConverter>();
             services.AddScoped<IDtoConverter<Building, BuildingRequest, BuildingResponse>, BuildingDtoConverter>();
+            services.AddScoped<IDtoConverter<Room, RoomRequest, RoomResponse>, RoomDtoConverter>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
