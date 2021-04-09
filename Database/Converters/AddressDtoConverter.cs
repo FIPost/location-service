@@ -10,7 +10,7 @@ namespace LocatieService.Database.Converters
         {
             return new Address
             {
-                City = request.City,
+                // City will be added in controller after fetching from db.
                 PostalCode = request.PostalCode,
                 Street = request.Street,
                 Number = request.Number,

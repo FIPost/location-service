@@ -1,11 +1,12 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace LocatieService.Database.Datamodels.Dtos
 {
     public class AddressRequest
     {
         [Required]
-        public City City { get; set; }
+        public Guid CityId { get; set; }
         [Required]
         public string PostalCode { get; set; }
         [Required]

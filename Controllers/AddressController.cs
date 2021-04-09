@@ -26,6 +26,17 @@ namespace LocatieService.Controllers
         public async Task<ActionResult> CreateCity(AddressRequest request)
         {
             Address address = _converter.DtoToModel(request);
+            // Get city from db
+            City city = await _context.Cities.FirstOrDefaultAsync(e => e.Id == request.CityId);
+
+            // Check if city exists
+            if (city.Equals(null))
+            {
+                return NotFound("Opgegeven stad staat niet in het systeem.");
+            }
+
+            address.City = city;
+
             _context.Addresses.Add(address);
             await _context.SaveChangesAsync();
 

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore.Infrastructure;
+using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace LocatieService.Database.Datamodels
@@ -9,7 +10,15 @@ namespace LocatieService.Database.Datamodels
         public Guid Id { get; set; }
         [Required]
         public string Name { get; set; }
+
+        // Lazy loading the city
+        private ILazyLoader LazyLoader { get; set; }
+        private Address _address;
         [Required]
-        public virtual Address Address{ get; set; }
+        public virtual Address Address
+        {
+            get => LazyLoader.Load(this, ref _address);
+            set => _address = value;
+        }
     }
 }
