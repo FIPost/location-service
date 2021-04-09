@@ -10,6 +10,6 @@ namespace LocatieService.Database.Datamodels
         [Required]
         public string Name { get; set; }
         [Required]
-        public Guid BuildingId { get; set; }
+        public virtual Building Building { get; set; }
     }
 }

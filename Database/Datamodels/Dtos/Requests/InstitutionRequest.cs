@@ -9,6 +9,6 @@ namespace LocatieService.Database.Datamodels.Dtos
         [Required]
         public string Name { get; set; }
         [Required]
-        public List<Guid> AddressList { get; set; }
+        public ICollection<Address> Addresses { get; set; }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace LocatieService.Database.Datamodels
@@ -8,7 +9,7 @@ namespace LocatieService.Database.Datamodels
         [Key]
         public Guid Id { get; set; }
         [Required]
-        public string CityId { get; set; }
+        public virtual City City { get; set; }
         [Required]
         public string PostalCode { get; set; }
         [Required]

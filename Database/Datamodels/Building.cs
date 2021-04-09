@@ -10,6 +10,6 @@ namespace LocatieService.Database.Datamodels
         [Required]
         public string Name { get; set; }
         [Required]
-        public Guid AddressId { get; set; }
+        public virtual Address Address{ get; set; }
     }
 }

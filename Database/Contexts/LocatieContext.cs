@@ -7,6 +7,10 @@ namespace LocatieService.Database.Contexts
     {
         public LocatieContext(DbContextOptions<LocatieContext> options) : base(options) { }
 
-        public DbSet<Locatie> Locaties { get; set; }
+        public DbSet<Address> Addresses { get; set; }
+        public DbSet<Building> Buildings { get; set; }
+        public DbSet<City> Cities { get; set; }
+        public DbSet<Institution> Institutions { get; set; }
+        public DbSet<Room> Rooms { get; set; }
     }
 }
