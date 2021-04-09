@@ -40,16 +40,15 @@ namespace LocatieService
             services.AddScoped<IDtoConverter<Institution, InstitutionRequest, InstitutionResponse>, InstitutionDtoConverter>();
             services.AddScoped<IDtoConverter<City, CityRequest, CityResponse>, CityDtoConverter>();
             services.AddScoped<IDtoConverter<Address, AddressRequest, AddressResponse>, AddressDtoConverter>();
+            services.AddScoped<IDtoConverter<Building, BuildingRequest, BuildingResponse>, BuildingDtoConverter>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env,
             LocatieContext addressContext)
         {
-            if (!addressContext.Database.EnsureCreated())
-            {
-                addressContext.Database.Migrate();
-            }
+            // Execute only if db is empty:
+            //addressContext.Database.Migrate();
 
             if (env.IsDevelopment())
             {

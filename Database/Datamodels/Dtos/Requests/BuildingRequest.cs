@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc;
+using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace LocatieService.Database.Datamodels.Dtos
@@ -8,6 +9,6 @@ namespace LocatieService.Database.Datamodels.Dtos
         [Required]
         public string Name { get; set; }
         [Required]
-        public Address Address { get; set; }
+        public Guid AddressId { get; set; }
     }
 }
