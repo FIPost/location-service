@@ -4,6 +4,7 @@ using LocatieService.Database.Datamodels;
 using LocatieService.Database.Datamodels.Dtos;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -47,6 +48,20 @@ namespace LocatieService.Controllers
         public async Task<ActionResult<List<Room>>> GetAllRooms()
         {
             return Ok(_converter.ModelToDto(await _context.Rooms.ToListAsync()));
+        }
+
+        [HttpGet]
+        [Route("{id}")]
+        public async Task<ActionResult<Room>> GetById(Guid id)
+        {
+            try
+            {
+                return await _context.Rooms.FirstOrDefaultAsync(e => e.Id == id);
+            }
+            catch (NullReferenceException)
+            {
+                return NotFound("Object not found");
+            }
         }
     }
 }
