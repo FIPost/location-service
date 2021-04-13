@@ -8,6 +8,6 @@ namespace LocatieService.Database.Datamodels.Dtos
         [Required]
         public string Name { get; set; }
         [Required]
-        public Address Address { get; set; }
+        public Guid AddressId { get; set; }
     }
 }
