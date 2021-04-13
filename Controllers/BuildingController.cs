@@ -45,14 +45,14 @@ namespace LocatieService.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<Building>>> GetAllBuildings()
+        public async Task<ActionResult<List<BuildingResponse>>> GetAllBuildings()
         {
             return Ok(_converter.ModelToDto(await _context.Buildings.ToListAsync()));
         }
 
         [HttpGet]
         [Route("{id}")]
-        public async Task<ActionResult<BuildingResponse>> GetById(Guid id)
+        public async Task<ActionResult<BuildingResponse>> GetBuildingById(Guid id)
         {
             try
             {

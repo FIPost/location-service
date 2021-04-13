@@ -24,7 +24,7 @@ namespace LocatieService.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> CreateInstitute(InstitutionRequest request)
+        public async Task<ActionResult> CreateInstitution(InstitutionRequest request)
         {
             Institution institution = _converter.DtoToModel(request);
             _context.Institutions.Add(institution);
@@ -34,14 +34,14 @@ namespace LocatieService.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<InstitutionResponse>>> GetAllInstitutes()
+        public async Task<ActionResult<List<InstitutionResponse>>> GetAllInstitutions()
         {
             return _converter.ModelToDto(await _context.Institutions.ToListAsync());
         }
 
         [HttpGet]
         [Route("{id}")]
-        public async Task<ActionResult<InstitutionResponse>> GetById(Guid id)
+        public async Task<ActionResult<InstitutionResponse>> GetInstitutionById(Guid id)
         {
             try
             {

@@ -24,7 +24,7 @@ namespace LocatieService.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> CreateCity(AddressRequest request)
+        public async Task<ActionResult> CreateAddress(AddressRequest request)
         {
             Address address = _converter.DtoToModel(request);
             // Get city from db
@@ -45,14 +45,14 @@ namespace LocatieService.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<AddressResponse>>> GetAllCities()
+        public async Task<ActionResult<List<AddressResponse>>> GetAllAddresses()
         {
             return Ok(_converter.ModelToDto(await _context.Addresses.ToListAsync()));
         }
 
         [HttpGet]
         [Route("{id}")]
-        public async Task<ActionResult<AddressResponse>> GetById(Guid id)
+        public async Task<ActionResult<AddressResponse>> GetAddressById(Guid id)
         {
             try
             {
@@ -62,6 +62,23 @@ namespace LocatieService.Controllers
             {
                 return NotFound("Object not found");
             }
+        }
+
+        [HttpDelete]
+        [Route("{id}")]
+        public async Task<ActionResult<AddressResponse>> DeleteAddressById(Guid id)
+        {
+            Address address = await _context.Addresses.FirstOrDefaultAsync(e => e.Id == id);
+
+            if (address.Equals(null)) // Check if address exists.
+            {
+                return NotFound("Object not found");
+            }
+
+            _context.Addresses.Remove(address); // Remove record.
+            _context.SaveChanges();
+
+            return Ok("Successfully removed.");
         }
     }
 }

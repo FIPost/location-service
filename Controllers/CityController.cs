@@ -41,7 +41,7 @@ namespace LocatieService.Controllers
 
         [HttpGet]
         [Route("{id}")]
-        public async Task<ActionResult<CityResponse>> GetById(Guid id)
+        public async Task<ActionResult<CityResponse>> GetCityById(Guid id)
         {
             try
             {
