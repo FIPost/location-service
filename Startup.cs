@@ -48,9 +48,6 @@ namespace LocatieService
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env,
             LocatieContext addressContext)
         {
-            // Execute only if db is empty:
-            //addressContext.Database.Migrate();
-
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();

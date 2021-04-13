@@ -52,11 +52,11 @@ namespace LocatieService.Controllers
 
         [HttpGet]
         [Route("{id}")]
-        public async Task<ActionResult<Room>> GetById(Guid id)
+        public async Task<ActionResult<RoomResponse>> GetById(Guid id)
         {
             try
             {
-                return await _context.Rooms.FirstOrDefaultAsync(e => e.Id == id);
+                return _converter.ModelToDto(await _context.Rooms.FirstOrDefaultAsync(e => e.Id == id));
             }
             catch (NullReferenceException)
             {
