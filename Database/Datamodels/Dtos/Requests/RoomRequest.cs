@@ -8,6 +8,6 @@ namespace LocatieService.Database.Datamodels.Dtos
         [Required]
         public string Name { get; set; }
         [Required]
-        public Guid BuildingId { get; set; }
+        public Building Building { get; set; }
     }
 }
