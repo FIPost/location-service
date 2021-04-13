@@ -12,7 +12,7 @@ namespace LocatieService.Database.Converters
             return new Room
             {
                 Name = request.Name,
-                // Building will be added in controller after fetching from db.
+                Building = request.Building
             };
         }
 

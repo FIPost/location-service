@@ -27,16 +27,6 @@ namespace LocatieService.Controllers
         public async Task<ActionResult> CreateBuilding(BuildingRequest request)
         {
             Building building = _converter.DtoToModel(request);
-            // Get city from db
-            Address address = await _context.Addresses.FirstOrDefaultAsync(e => e.Id == request.AddressId);
-
-            // Check if city exists
-            if (address.Equals(null))
-            {
-                return NotFound("Opgegeven stad staat niet in het systeem.");
-            }
-
-            building.Address = address;
 
             _context.Buildings.Add(building);
             await _context.SaveChangesAsync();
@@ -62,6 +52,24 @@ namespace LocatieService.Controllers
             {
                 return NotFound("Object not found");
             }
+        }
+
+        [HttpDelete]
+        [Route("{id}")]
+        public async Task<ActionResult> DeleteBuildingById(Guid id)
+        {
+            Building building = await _context.Buildings.FirstOrDefaultAsync(e => e.Id == id);
+
+            if (building == null) // Check if address exists.
+            {
+                return NotFound("Object not found");
+            }
+
+            _context.Remove(building.Address); // Remove reference to this building in address table.
+            _context.Buildings.Remove(building); // Remove record.
+            _context.SaveChanges();
+
+            return Ok("Successfully removed.");
         }
     }
 }

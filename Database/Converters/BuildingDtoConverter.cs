@@ -11,8 +11,8 @@ namespace LocatieService.Database.Converters
         {
             return new Building
             {
-                Name = request.Name
-                // Address will be added in controller after fetching from db.
+                Name = request.Name,
+                Address = request.Address
             };
         }
 

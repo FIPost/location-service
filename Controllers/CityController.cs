@@ -52,5 +52,22 @@ namespace LocatieService.Controllers
                 return NotFound("Object not found");
             }
         }
+
+        [HttpDelete]
+        [Route("{id}")]
+        public async Task<ActionResult> DeleteCityById(Guid id)
+        {
+            City city = await _context.Cities.FirstOrDefaultAsync(e => e.Id == id);
+
+            if (city == null) // Check if address exists.
+            {
+                return NotFound("Object not found");
+            }
+
+            _context.Remove(city); // Remove record.
+            _context.SaveChanges();
+
+            return Ok("Successfully removed.");
+        }
     }
 }

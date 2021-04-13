@@ -27,6 +27,7 @@ namespace LocatieService.Controllers
         public async Task<ActionResult> CreateInstitution(InstitutionRequest request)
         {
             Institution institution = _converter.DtoToModel(request);
+
             _context.Institutions.Add(institution);
             await _context.SaveChangesAsync();
 
@@ -51,6 +52,28 @@ namespace LocatieService.Controllers
             {
                 return NotFound("Object not found");
             }
+        }
+
+        [HttpDelete]
+        [Route("{id}")]
+        public async Task<ActionResult> DeleteInstitutionById(Guid id)
+        {
+            Institution institution = await _context.Institutions.FirstOrDefaultAsync(e => e.Id == id); // Get institution
+
+            if (institution == null) // Check if address exists.
+            {
+                return NotFound("Object not found");
+            }
+
+            foreach (Address address in institution.Addresses)
+            {
+                _context.Remove(address); // Remove all references to this institution in address table.
+            }
+
+            _context.Remove(institution); // Remove record.
+            _context.SaveChanges();
+
+            return Ok("Successfully removed.");
         }
     }
 }

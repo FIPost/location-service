@@ -6,7 +6,7 @@ namespace LocatieService.Database.Datamodels.Dtos
     public class AddressRequest
     {
         [Required]
-        public Guid CityId { get; set; }
+        public City City { get; set; }
         [Required]
         public string PostalCode { get; set; }
         [Required]

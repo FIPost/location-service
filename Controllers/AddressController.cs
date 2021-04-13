@@ -27,16 +27,6 @@ namespace LocatieService.Controllers
         public async Task<ActionResult> CreateAddress(AddressRequest request)
         {
             Address address = _converter.DtoToModel(request);
-            // Get city from db
-            City city = await _context.Cities.FirstOrDefaultAsync(e => e.Id == request.CityId);
-
-            // Check if city exists
-            if (city.Equals(null))
-            {
-                return NotFound("Opgegeven stad staat niet in het systeem.");
-            }
-
-            address.City = city;
 
             _context.Addresses.Add(address);
             await _context.SaveChangesAsync();
@@ -66,16 +56,17 @@ namespace LocatieService.Controllers
 
         [HttpDelete]
         [Route("{id}")]
-        public async Task<ActionResult<AddressResponse>> DeleteAddressById(Guid id)
+        public async Task<ActionResult> DeleteAddressById(Guid id)
         {
             Address address = await _context.Addresses.FirstOrDefaultAsync(e => e.Id == id);
 
-            if (address.Equals(null)) // Check if address exists.
+            if (address == null) // Check if address exists.
             {
                 return NotFound("Object not found");
             }
 
-            _context.Addresses.Remove(address); // Remove record.
+            _context.Remove(address.City); // Remove reference to this address in city table.
+            _context.Remove(address); // Remove record.
             _context.SaveChanges();
 
             return Ok("Successfully removed.");
