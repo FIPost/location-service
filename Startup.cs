@@ -30,7 +30,9 @@ namespace LocatieService
             services.AddDbContext<LocatieContext>(
                 options => options.UseSqlServer(connection));
 
-            services.AddControllers();
+            services.AddControllers().AddNewtonsoftJson(options =>
+                options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
+
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "LocatieService", Version = "v1" });
@@ -48,7 +50,7 @@ namespace LocatieService
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env,
             LocatieContext addressContext)
         {
-            //addressContext.Database.Migrate();
+            addressContext.Database.Migrate();
 
             if (env.IsDevelopment())
             {

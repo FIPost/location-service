@@ -22,7 +22,6 @@ namespace LocatieService.Database.Converters
         {
             return new AddressResponse
             {
-                Id = model.Id,
                 City = model.City,
                 PostalCode = model.PostalCode,
                 Street = model.Street,

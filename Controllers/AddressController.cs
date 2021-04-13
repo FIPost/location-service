@@ -40,36 +40,36 @@ namespace LocatieService.Controllers
             return Ok(_converter.ModelToDto(await _context.Addresses.ToListAsync()));
         }
 
-        [HttpGet]
-        [Route("{id}")]
-        public async Task<ActionResult<AddressResponse>> GetAddressById(Guid id)
-        {
-            try
-            {
-                return _converter.ModelToDto(await _context.Addresses.FirstOrDefaultAsync(e => e.Id == id));
-            }
-            catch (NullReferenceException)
-            {
-                return NotFound("Object not found");
-            }
-        }
+        //[HttpGet]
+        //[Route("{id}")]
+        //public async Task<ActionResult<AddressResponse>> GetAddressById(Guid id)
+        //{
+        //    try
+        //    {
+        //        return _converter.ModelToDto(await _context.Addresses.FirstOrDefaultAsync(e => e.Id == id));
+        //    }
+        //    catch (NullReferenceException)
+        //    {
+        //        return NotFound("Object not found");
+        //    }
+        //}
 
-        [HttpDelete]
-        [Route("{id}")]
-        public async Task<ActionResult> DeleteAddressById(Guid id)
-        {
-            Address address = await _context.Addresses.FirstOrDefaultAsync(e => e.Id == id);
+        //[HttpDelete]
+        //[Route("{id}")]
+        //public async Task<ActionResult> DeleteAddressById(Guid id)
+        //{
+        //    Address address = await _context.Addresses.FirstOrDefaultAsync(e => e.Id == id);
 
-            if (address == null) // Check if address exists.
-            {
-                return NotFound("Object not found");
-            }
+        //    if (address == null) // Check if address exists.
+        //    {
+        //        return NotFound("Object not found");
+        //    }
 
-            _context.Remove(address.City); // Remove reference to this address in city table.
-            _context.Remove(address); // Remove record.
-            _context.SaveChanges();
+        //    _context.Remove(address.City); // Remove reference to this address in city table.
+        //    _context.Remove(address); // Remove record.
+        //    _context.SaveChanges();
 
-            return Ok("Successfully removed.");
-        }
+        //    return Ok("Successfully removed.");
+        //}
     }
 }
