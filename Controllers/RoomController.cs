@@ -28,6 +28,14 @@ namespace LocatieService.Controllers
         {
             Room Room = _converter.DtoToModel(request);
 
+            Building building = await _context.Buildings.FirstOrDefaultAsync(e => e.Id == request.BuildingId);
+
+            // Check if building exists.
+            if (building == null)
+            {
+                return BadRequest("This building does not exist");
+            }
+
             _context.Rooms.Add(Room);
             await _context.SaveChangesAsync();
 
@@ -37,21 +45,28 @@ namespace LocatieService.Controllers
         [HttpGet]
         public async Task<ActionResult<List<RoomResponse>>> GetAllRooms()
         {
-            return Ok(_converter.ModelToDto(await _context.Rooms.ToListAsync()));
+            List<Room> rooms = await _context.Rooms.ToListAsync();
+            List<RoomResponse> responses = new();
+
+            foreach (Room room in rooms)
+            {
+                RoomResponse response = _converter.ModelToDto(room);
+                response.Building = await _context.Buildings.FirstOrDefaultAsync(e => e.Id == room.BuildingId);
+                responses.Add(response);
+            }
+
+            return Ok(responses);
         }
 
         [HttpGet]
         [Route("{id}")]
         public async Task<ActionResult<RoomResponse>> GetRoomById(Guid id)
         {
-            try
-            {
-                return _converter.ModelToDto(await _context.Rooms.FirstOrDefaultAsync(e => e.Id == id));
-            }
-            catch (NullReferenceException)
-            {
-                return NotFound("Object not found");
-            }
+            Room room = await _context.Rooms.FirstOrDefaultAsync(e => e.Id == id);
+            RoomResponse response = _converter.ModelToDto(room);
+            response.Building = await _context.Buildings.FirstOrDefaultAsync(e => e.Id == room.BuildingId); // Insert building to model.
+
+            return Ok(response);
         }
 
         [HttpDelete]
@@ -60,12 +75,11 @@ namespace LocatieService.Controllers
         {
             Room room = await _context.Rooms.FirstOrDefaultAsync(e => e.Id == id);
 
-            if (room == null) // Check if address exists.
+            if (room == null) // Check if room exists.
             {
                 return NotFound("Object not found");
             }
 
-            _context.Remove(room.Building); // Remove reference to this room in building table.
             _context.Remove(room); // Remove record.
             _context.SaveChanges();
 

@@ -37,21 +37,25 @@ namespace LocatieService.Controllers
         [HttpGet]
         public async Task<ActionResult<List<InstitutionResponse>>> GetAllInstitutions()
         {
-            return _converter.ModelToDto(await _context.Institutions.ToListAsync());
+            List<Institution> institutions = await _context.Institutions.ToListAsync();
+            List<InstitutionResponse> responses = new();
+
+            foreach (Institution institution in institutions)
+            {
+                responses.Add(_converter.ModelToDto(institution)); // Add response to list.
+            }
+
+            return Ok(responses);
         }
 
         [HttpGet]
         [Route("{id}")]
         public async Task<ActionResult<InstitutionResponse>> GetInstitutionById(Guid id)
         {
-            try
-            {
-                return _converter.ModelToDto(await _context.Institutions.FirstOrDefaultAsync(e => e.Id == id));
-            }
-            catch (NullReferenceException)
-            {
-                return NotFound("Object not found");
-            }
+            Institution institution = await _context.Institutions.FirstOrDefaultAsync(e => e.Id == id);
+            InstitutionResponse response = _converter.ModelToDto(institution);
+
+            return Ok(response);
         }
 
         [HttpDelete]
@@ -60,14 +64,9 @@ namespace LocatieService.Controllers
         {
             Institution institution = await _context.Institutions.FirstOrDefaultAsync(e => e.Id == id); // Get institution
 
-            if (institution == null) // Check if address exists.
+            if (institution == null) // Check if institution exists.
             {
                 return NotFound("Object not found");
-            }
-
-            foreach (Address address in institution.Addresses)
-            {
-                _context.Remove(address); // Remove all references to this institution in address table.
             }
 
             _context.Remove(institution); // Remove record.

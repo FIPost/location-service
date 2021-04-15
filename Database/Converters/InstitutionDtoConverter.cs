@@ -21,7 +21,7 @@ namespace LocatieService.Database.Converters
             {
                 Id = model.Id,
                 Name = model.Name,
-                Addresses = model.Addresses
+                // Adreslijst wordt in controller opgehaald.
             };
         }
 

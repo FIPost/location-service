@@ -10,7 +10,7 @@ namespace LocatieService.Database.Converters
         {
             return new Address
             {
-                City = request.City,
+                CityId = request.CityId,
                 PostalCode = request.PostalCode,
                 Street = request.Street,
                 Number = request.Number,
@@ -22,7 +22,8 @@ namespace LocatieService.Database.Converters
         {
             return new AddressResponse
             {
-                City = model.City,
+                Id = model.Id,
+                // City wordt in controller opgehaald.
                 PostalCode = model.PostalCode,
                 Street = model.Street,
                 Number = model.Number,

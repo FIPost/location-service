@@ -28,6 +28,14 @@ namespace LocatieService.Controllers
         {
             Building building = _converter.DtoToModel(request);
 
+            Address address = await _context.Addresses.FirstOrDefaultAsync(e => e.Id == request.AddressId);
+
+            // Check if address exists.
+            if (address == null)
+            {
+                return BadRequest("This address does not exist");
+            }
+
             _context.Buildings.Add(building);
             await _context.SaveChangesAsync();
 
@@ -37,6 +45,16 @@ namespace LocatieService.Controllers
         [HttpGet]
         public async Task<ActionResult<List<BuildingResponse>>> GetAllBuildings()
         {
+            List<Building> buildings = await _context.Buildings.ToListAsync();
+            List<BuildingResponse> responses = new();
+
+            foreach (Building building in buildings)
+            {
+                BuildingResponse response = _converter.ModelToDto(building);
+                response.Address = await _context.Addresses.FirstOrDefaultAsync(e => e.Id == building.AddressId);
+                responses.Add(response);
+            }
+
             return Ok(_converter.ModelToDto(await _context.Buildings.ToListAsync()));
         }
 
@@ -44,14 +62,11 @@ namespace LocatieService.Controllers
         [Route("{id}")]
         public async Task<ActionResult<BuildingResponse>> GetBuildingById(Guid id)
         {
-            try
-            {
-                return _converter.ModelToDto(await _context.Buildings.FirstOrDefaultAsync(e => e.Id == id));
-            }
-            catch (NullReferenceException)
-            {
-                return NotFound("Object not found");
-            }
+            Building building = await _context.Buildings.FirstOrDefaultAsync(e => e.Id == id);
+            BuildingResponse response = _converter.ModelToDto(building);
+            response.Address = await _context.Addresses.FirstOrDefaultAsync(e => e.Id == building.AddressId); // Insert address to model.
+
+            return Ok(response);
         }
 
         [HttpDelete]
@@ -60,13 +75,12 @@ namespace LocatieService.Controllers
         {
             Building building = await _context.Buildings.FirstOrDefaultAsync(e => e.Id == id);
 
-            if (building == null) // Check if address exists.
+            if (building == null) // Check if building exists.
             {
                 return NotFound("Object not found");
             }
 
-            _context.Remove(building.Address); // Remove reference to this building in address table.
-            _context.Buildings.Remove(building); // Remove record.
+            _context.Remove(building); // Remove record.
             _context.SaveChanges();
 
             return Ok("Successfully removed.");

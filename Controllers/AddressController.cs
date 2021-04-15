@@ -28,6 +28,14 @@ namespace LocatieService.Controllers
         {
             Address address = _converter.DtoToModel(request);
 
+            City city = await _context.Cities.FirstOrDefaultAsync(e => e.Id == request.CityId);
+
+            // Check if city exists.
+            if (city == null)
+            {
+                return BadRequest("This city does not exist");
+            }
+
             _context.Addresses.Add(address);
             await _context.SaveChangesAsync();
 
@@ -37,39 +45,45 @@ namespace LocatieService.Controllers
         [HttpGet]
         public async Task<ActionResult<List<AddressResponse>>> GetAllAddresses()
         {
-            return Ok(_converter.ModelToDto(await _context.Addresses.ToListAsync()));
+            List<Address> addresses = await _context.Addresses.ToListAsync();
+            List<AddressResponse> responses = new();
+
+            foreach (Address address in addresses)
+            {
+                AddressResponse response = _converter.ModelToDto(address);
+                response.City = await _context.Cities.FirstOrDefaultAsync(e => e.Id == address.CityId);
+                responses.Add(response);
+            }
+
+            return Ok(responses);
         }
 
-        //[HttpGet]
-        //[Route("{id}")]
-        //public async Task<ActionResult<AddressResponse>> GetAddressById(Guid id)
-        //{
-        //    try
-        //    {
-        //        return _converter.ModelToDto(await _context.Addresses.FirstOrDefaultAsync(e => e.Id == id));
-        //    }
-        //    catch (NullReferenceException)
-        //    {
-        //        return NotFound("Object not found");
-        //    }
-        //}
+        [HttpGet]
+        [Route("{id}")]
+        public async Task<ActionResult<AddressResponse>> GetAddressById(Guid id)
+        {
+            Address address = await _context.Addresses.FirstOrDefaultAsync(e => e.Id == id);
+            AddressResponse response = _converter.ModelToDto(address);
+            response.City = await _context.Cities.FirstOrDefaultAsync(e => e.Id == address.CityId);
 
-        //[HttpDelete]
-        //[Route("{id}")]
-        //public async Task<ActionResult> DeleteAddressById(Guid id)
-        //{
-        //    Address address = await _context.Addresses.FirstOrDefaultAsync(e => e.Id == id);
+            return Ok(response);
+        }
 
-        //    if (address == null) // Check if address exists.
-        //    {
-        //        return NotFound("Object not found");
-        //    }
+        [HttpDelete]
+        [Route("{id}")]
+        public async Task<ActionResult> DeleteAddressById(Guid id)
+        {
+            Address address = await _context.Addresses.FirstOrDefaultAsync(e => e.Id == id);
 
-        //    _context.Remove(address.City); // Remove reference to this address in city table.
-        //    _context.Remove(address); // Remove record.
-        //    _context.SaveChanges();
+            if (address == null) // Check if address exists.
+            {
+                return NotFound("Object not found");
+            }
 
-        //    return Ok("Successfully removed.");
-        //}
+            _context.Remove(address); // Remove record.
+            _context.SaveChanges();
+
+            return Ok("Successfully removed.");
+        }
     }
 }
