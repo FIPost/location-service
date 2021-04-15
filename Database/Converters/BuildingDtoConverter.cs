@@ -1,6 +1,7 @@
 ﻿using LocatieService.Database.Converters;
 using LocatieService.Database.Datamodels;
 using LocatieService.Database.Datamodels.Dtos;
+using LocatieService.Database.Datamodels.Dtos.Responses;
 using System.Collections.Generic;
 
 namespace LocatieService.Database.Converters
@@ -22,7 +23,14 @@ namespace LocatieService.Database.Converters
             {
                 Id = model.Id,
                 Name = model.Name,
-                // Address will be added in the controller.
+                Address = new AddressResponse
+                {
+                    // City will be added in controller.
+                    PostalCode = model.Address.PostalCode,
+                    Street = model.Address.Street,
+                    Number = model.Address.Number,
+                    Addition = model.Address.Addition
+                }
             };
         }
 

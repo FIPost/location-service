@@ -51,6 +51,7 @@ namespace LocatieService.Controllers
             {
                 BuildingResponse response = _converter.ModelToDto(building);
                 response.Address.City = await _context.Cities.FirstOrDefaultAsync(e => e.Id == building.Address.CityId);
+
                 responses.Add(response);
             }
 

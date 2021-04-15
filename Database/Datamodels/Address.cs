@@ -12,6 +12,17 @@ namespace LocatieService.Database.Datamodels
         public int Number { get; set; }
         public string Addition { get; set; }
 
+        public Address() { }
+
+        public Address(Guid cityId, string postalCode, string street, int number, string addition)
+        {
+            CityId = cityId;
+            PostalCode = postalCode;
+            Street = street;
+            Number = number;
+            Addition = addition;
+        }
+
         protected override IEnumerable<object> GetEqualityComponents()
         {
             yield return CityId;
