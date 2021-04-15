@@ -12,7 +12,7 @@ namespace LocatieService.Database.Converters
             return new Building
             {
                 Name = request.Name,
-                AddressId = request.AddressId
+                Address = request.Address
             };
         }
 
@@ -22,7 +22,7 @@ namespace LocatieService.Database.Converters
             {
                 Id = model.Id,
                 Name = model.Name,
-                // Address wordt in controller opgehaald.
+                Address = model.Address
             };
         }
 

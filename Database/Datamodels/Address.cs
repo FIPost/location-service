@@ -1,23 +1,24 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
 
 namespace LocatieService.Database.Datamodels
 {
-    public class Address
+    public class Address : ValueObject
     {
-        [Key]
-        public Guid Id { get; set; }
-        [Required]
         public Guid CityId { get; set; }
-        [Required]
         public string PostalCode { get; set; }
-        [Required]
         public string Street { get; set; }
-        [Required]
         public int Number { get; set; }
         public string Addition { get; set; }
 
-        public Guid InstitutionId { get; set; }
-        public Institution Institution { get; set; }
+        protected override IEnumerable<object> GetEqualityComponents()
+        {
+            yield return CityId;
+            yield return PostalCode;
+            yield return Street;
+            yield return Number;
+            yield return Addition;
+        }
     }
 }

@@ -39,9 +39,7 @@ namespace LocatieService
             });
 
             //Inject converter.
-            services.AddScoped<IDtoConverter<Institution, InstitutionRequest, InstitutionResponse>, InstitutionDtoConverter>();
             services.AddScoped<IDtoConverter<City, CityRequest, CityResponse>, CityDtoConverter>();
-            services.AddScoped<IDtoConverter<Address, AddressRequest, AddressResponse>, AddressDtoConverter>();
             services.AddScoped<IDtoConverter<Building, BuildingRequest, BuildingResponse>, BuildingDtoConverter>();
             services.AddScoped<IDtoConverter<Room, RoomRequest, RoomResponse>, RoomDtoConverter>();
         }
@@ -55,9 +53,10 @@ namespace LocatieService
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "LocatieService v1"));
             }
+
+            app.UseSwagger();
+            app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "LocatieService v1"));
 
             app.UseHttpsRedirection();
 
