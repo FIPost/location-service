@@ -11,6 +11,8 @@ namespace LocatieService.Database.Contexts
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfiguration(new BuildingConfiguration());
+            modelBuilder.ApplyConfiguration(new RoomConfiguration());
+            modelBuilder.ApplyConfiguration(new CityConfiguration());
         }
 
         public DbSet<Building> Buildings { get; set; }

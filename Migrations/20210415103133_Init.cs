@@ -12,7 +12,7 @@ namespace LocatieService.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
                     Address_CityId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     Address_PostalCode = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Address_Street = table.Column<string>(type: "nvarchar(max)", nullable: true),
@@ -25,28 +25,28 @@ namespace LocatieService.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Cities",
+                name: "cities",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    Name = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Cities", x => x.Id);
+                    table.PrimaryKey("PK_cities", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
-                name: "Rooms",
+                name: "rooms",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
                     BuildingId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Rooms", x => x.Id);
+                    table.PrimaryKey("PK_rooms", x => x.Id);
                 });
         }
 
@@ -56,10 +56,10 @@ namespace LocatieService.Migrations
                 name: "buildings");
 
             migrationBuilder.DropTable(
-                name: "Cities");
+                name: "cities");
 
             migrationBuilder.DropTable(
-                name: "Rooms");
+                name: "rooms");
         }
     }
 }

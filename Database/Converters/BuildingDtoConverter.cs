@@ -22,7 +22,7 @@ namespace LocatieService.Database.Converters
             {
                 Id = model.Id,
                 Name = model.Name,
-                Address = model.Address
+                // Address will be added in the controller.
             };
         }
 

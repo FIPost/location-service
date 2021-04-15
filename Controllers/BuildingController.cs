@@ -28,6 +28,13 @@ namespace LocatieService.Controllers
         {
             Building building = _converter.DtoToModel(request);
 
+            City city = await _context.Cities.FirstOrDefaultAsync(e => e.Id == request.Address.CityId);
+
+            if (city == null)
+            {
+                return BadRequest($"City with id {request.Address.CityId} does not exist.");
+            }
+
             _context.Buildings.Add(building);
             await _context.SaveChangesAsync();
 
@@ -43,6 +50,7 @@ namespace LocatieService.Controllers
             foreach (Building building in buildings)
             {
                 BuildingResponse response = _converter.ModelToDto(building);
+                response.Address.City = await _context.Cities.FirstOrDefaultAsync(e => e.Id == building.Address.CityId);
                 responses.Add(response);
             }
 
@@ -55,6 +63,7 @@ namespace LocatieService.Controllers
         {
             Building building = await _context.Buildings.FirstOrDefaultAsync(e => e.Id == id);
             BuildingResponse response = _converter.ModelToDto(building);
+            response.Address.City = await _context.Cities.FirstOrDefaultAsync(e => e.Id == building.Address.CityId);
 
             return Ok(response);
         }

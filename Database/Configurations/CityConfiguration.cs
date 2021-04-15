@@ -4,16 +4,14 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace LocatieService.Database.Configurations
 {
-    public class BuildingConfiguration : IEntityTypeConfiguration<Building>
+    public class CityConfiguration : IEntityTypeConfiguration<City>
     {
-        public void Configure(EntityTypeBuilder<Building> builder)
+        public void Configure(EntityTypeBuilder<City> builder)
         {
-            builder.ToTable("buildings");
+            builder.ToTable("cities");
             builder.HasKey(x => x.Id);
             builder.Property<string>("Name").IsRequired();
             builder.Property<string>("Name").HasMaxLength(255);
-
-            builder.OwnsOne(x => x.Address);
         }
     }
 }
