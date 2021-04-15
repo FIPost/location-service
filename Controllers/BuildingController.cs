@@ -55,7 +55,7 @@ namespace LocatieService.Controllers
                 responses.Add(response);
             }
 
-            return Ok(_converter.ModelToDto(await _context.Buildings.ToListAsync()));
+            return Ok(responses);
         }
 
         [HttpGet]
