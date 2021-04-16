@@ -1,4 +1,4 @@
-name: Build .NET API
+name: Publish Docker Build
 on:
   push:
     branches: [ master ]
