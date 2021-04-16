@@ -14,6 +14,7 @@ namespace LocatieService
 {
     public class Startup
     {
+        readonly string MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -30,33 +31,48 @@ namespace LocatieService
             services.AddDbContext<LocatieContext>(
                 options => options.UseSqlServer(connection));
 
-            services.AddControllers();
+            services.AddControllers().AddNewtonsoftJson(options =>
+                options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
+
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "LocatieService", Version = "v1" });
             });
 
+            services.AddCors(options =>
+            {
+                options.AddPolicy(name: MyAllowSpecificOrigins,
+                      builder =>
+                      {
+                          builder.WithOrigins("*")
+                          .AllowAnyHeader()
+                          .AllowAnyMethod()
+                          .AllowAnyOrigin();
+                      });
+            });
+
             //Inject converter.
-            services.AddScoped<IDtoConverter<Institution, InstitutionRequest, InstitutionResponse>, InstitutionDtoConverter>();
             services.AddScoped<IDtoConverter<City, CityRequest, CityResponse>, CityDtoConverter>();
-            services.AddScoped<IDtoConverter<Address, AddressRequest, AddressResponse>, AddressDtoConverter>();
+            services.AddScoped<IDtoConverter<Building, BuildingRequest, BuildingResponse>, BuildingDtoConverter>();
+            services.AddScoped<IDtoConverter<Room, RoomRequest, RoomResponse>, RoomDtoConverter>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env,
             LocatieContext addressContext)
         {
-            if (!addressContext.Database.EnsureCreated())
+            if (env.IsDevelopment())
+            {
+                app.UseDeveloperExceptionPage();
+            } else
             {
                 addressContext.Database.Migrate();
             }
 
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-                app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "LocatieService v1"));
-            }
+            app.UseCors(MyAllowSpecificOrigins);
+
+            app.UseSwagger();
+            app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "LocatieService v1"));
 
             app.UseHttpsRedirection();
 

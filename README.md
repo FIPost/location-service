@@ -19,3 +19,10 @@ dotnet run
 ```
 docker-compose up --build
 ```
+
+#### Error: Docker Network Missing
+If you get the following error:
+Network `ipost-network` declared as external, but could not be found. Run the following:
+```zsh
+docker network create ipost-network
+```

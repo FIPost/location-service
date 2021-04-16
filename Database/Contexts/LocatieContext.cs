@@ -1,4 +1,5 @@
-﻿using LocatieService.Database.Datamodels;
+﻿using LocatieService.Database.Configurations;
+using LocatieService.Database.Datamodels;
 using Microsoft.EntityFrameworkCore;
 
 namespace LocatieService.Database.Contexts
@@ -7,10 +8,15 @@ namespace LocatieService.Database.Contexts
     {
         public LocatieContext(DbContextOptions<LocatieContext> options) : base(options) { }
 
-        public DbSet<Address> Addresses { get; set; }
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.ApplyConfiguration(new BuildingConfiguration());
+            modelBuilder.ApplyConfiguration(new RoomConfiguration());
+            modelBuilder.ApplyConfiguration(new CityConfiguration());
+        }
+
         public DbSet<Building> Buildings { get; set; }
         public DbSet<City> Cities { get; set; }
-        public DbSet<Institution> Institutions { get; set; }
         public DbSet<Room> Rooms { get; set; }
     }
 }

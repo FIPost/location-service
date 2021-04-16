@@ -1,4 +1,5 @@
-﻿using System;
+﻿using LocatieService.Database.Datamodels.Dtos.Responses;
+using System;
 
 namespace LocatieService.Database.Datamodels.Dtos
 {
@@ -6,6 +7,6 @@ namespace LocatieService.Database.Datamodels.Dtos
     {
         public Guid Id { get; set; }
         public string Name { get; set; }
-        public Address Address { get; set; }
+        public AddressResponse Address { get; set; }
     }
 }

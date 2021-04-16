@@ -4,6 +4,7 @@ using LocatieService.Database.Datamodels;
 using LocatieService.Database.Datamodels.Dtos;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -36,6 +37,30 @@ namespace LocatieService.Controllers
         public async Task<ActionResult<List<CityResponse>>> GetAllCities()
         {
             return _converter.ModelToDto(await _context.Cities.ToListAsync());
+        }
+
+        [HttpGet]
+        [Route("{id}")]
+        public async Task<ActionResult<CityResponse>> GetCityById(Guid id)
+        {
+            return Ok(_converter.ModelToDto(await _context.Cities.FirstOrDefaultAsync(e => e.Id == id)));
+        }
+
+        [HttpDelete]
+        [Route("{id}")]
+        public async Task<ActionResult> DeleteCityById(Guid id)
+        {
+            City city = await _context.Cities.FirstOrDefaultAsync(e => e.Id == id);
+
+            if (city == null) // Check if city exists.
+            {
+                return NotFound("Object not found");
+            }
+
+            _context.Remove(city); // Remove record.
+            _context.SaveChanges();
+
+            return Ok("Successfully removed.");
         }
     }
 }

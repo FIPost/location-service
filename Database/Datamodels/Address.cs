@@ -1,29 +1,35 @@
-﻿using Microsoft.EntityFrameworkCore.Infrastructure;
+﻿using Microsoft.EntityFrameworkCore;
 using System;
-using System.ComponentModel.DataAnnotations;
+using System.Collections.Generic;
 
 namespace LocatieService.Database.Datamodels
 {
-    public class Address
+    public class Address : ValueObject
     {
-        [Key]
-        public Guid Id { get; set; }
-        [Required]
+        public Guid CityId { get; set; }
         public string PostalCode { get; set; }
-        [Required]
         public string Street { get; set; }
-        [Required]
         public int Number { get; set; }
         public string Addition { get; set; }
 
-        // Lazy loading the city
-        private ILazyLoader LazyLoader { get; set; }
-        private City _city;
-        [Required]
-        public virtual City City
+        public Address() { }
+
+        public Address(Guid cityId, string postalCode, string street, int number, string addition)
         {
-            get => LazyLoader.Load(this, ref _city);
-            set => _city = value;
+            CityId = cityId;
+            PostalCode = postalCode;
+            Street = street;
+            Number = number;
+            Addition = addition;
+        }
+
+        protected override IEnumerable<object> GetEqualityComponents()
+        {
+            yield return CityId;
+            yield return PostalCode;
+            yield return Street;
+            yield return Number;
+            yield return Addition;
         }
     }
 }
