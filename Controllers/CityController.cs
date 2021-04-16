@@ -26,8 +26,15 @@ namespace LocatieService.Controllers
         [HttpPost]
         public async Task<ActionResult> CreateCity(CityRequest request)
         {
-            City city = _converter.DtoToModel(request);
-            _context.Cities.Add(city);
+            City city = await _context.Cities.FirstOrDefaultAsync(e => e.Name == request.Name);
+
+            if (city != null)
+            {
+                return Conflict($"City with name {request.Name} already exists.");
+            }
+
+            City newCity = _converter.DtoToModel(request);
+            _context.Cities.Add(newCity);
             await _context.SaveChangesAsync();
 
             return Created("Created", request);
@@ -43,7 +50,28 @@ namespace LocatieService.Controllers
         [Route("{id}")]
         public async Task<ActionResult<CityResponse>> GetCityById(Guid id)
         {
-            return Ok(_converter.ModelToDto(await _context.Cities.FirstOrDefaultAsync(e => e.Id == id)));
+            City city = await _context.Cities.FirstOrDefaultAsync(e => e.Id == id);
+
+            if (city == null)
+            {
+                return NotFound($"City with id {id} not found.");
+            }
+
+            return Ok(_converter.ModelToDto(city));
+        }
+
+        [HttpGet]
+        [Route("name/{name}")]
+        public async Task<ActionResult<CityResponse>> GetCityByName(string name)
+        {
+            City city = await _context.Cities.FirstOrDefaultAsync(e => e.Name == name);
+
+            if (city == null)
+            {
+                return NotFound($"City with name {name} not found.");
+            }
+
+            return Ok(_converter.ModelToDto(city));
         }
 
         [HttpDelete]

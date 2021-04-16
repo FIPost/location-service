@@ -16,18 +16,20 @@ namespace LocatieService.Controllers
     {
         private readonly LocatieContext _context;
         private readonly IDtoConverter<Room, RoomRequest, RoomResponse> _converter;
+        private readonly IDtoConverter<Building, BuildingRequest, BuildingResponse> _buildingConverter;
 
-        public RoomController(LocatieContext context, IDtoConverter<Room, RoomRequest, RoomResponse> converter)
+        public RoomController(LocatieContext context,
+            IDtoConverter<Room, RoomRequest, RoomResponse> converter,
+            IDtoConverter<Building, BuildingRequest, BuildingResponse> buildingConverter)
         {
             _context = context;
             _converter = converter;
+            _buildingConverter = buildingConverter;
         }
 
         [HttpPost]
         public async Task<ActionResult> CreateRoom(RoomRequest request)
         {
-            Room Room = _converter.DtoToModel(request);
-
             Building building = await _context.Buildings.FirstOrDefaultAsync(e => e.Id == request.BuildingId);
 
             // Check if building exists.
@@ -36,7 +38,16 @@ namespace LocatieService.Controllers
                 return BadRequest("This building does not exist");
             }
 
-            _context.Rooms.Add(Room);
+            Room room = await _context.Rooms.FirstOrDefaultAsync(e => e.BuildingId == request.BuildingId && e.Name == request.Name);
+
+            if (room != null)
+            {
+                return Conflict($"City with name {request.Name} and buildingId {request.BuildingId} already exists.");
+            }
+
+            Room newRoom = _converter.DtoToModel(request);
+
+            _context.Rooms.Add(newRoom);
             await _context.SaveChangesAsync();
 
             return Created("Created", request);
@@ -51,7 +62,7 @@ namespace LocatieService.Controllers
             foreach (Room room in rooms)
             {
                 RoomResponse response = _converter.ModelToDto(room);
-                response.Building = await _context.Buildings.FirstOrDefaultAsync(e => e.Id == room.BuildingId);
+                response.Building = await GetBuilding(room.BuildingId);
                 responses.Add(response);
             }
 
@@ -63,8 +74,31 @@ namespace LocatieService.Controllers
         public async Task<ActionResult<RoomResponse>> GetRoomById(Guid id)
         {
             Room room = await _context.Rooms.FirstOrDefaultAsync(e => e.Id == id);
+
+            if (room == null)
+            {
+                return NotFound($"Room with id {id} not found.");
+            }
+
             RoomResponse response = _converter.ModelToDto(room);
-            response.Building = await _context.Buildings.FirstOrDefaultAsync(e => e.Id == room.BuildingId); // Insert building to model.
+            response.Building = await GetBuilding(room.BuildingId);
+
+            return Ok(response);
+        }
+
+        [HttpGet]
+        [Route("name/{name}")]
+        public async Task<ActionResult<RoomResponse>> GetRoomByName(string name)
+        {
+            Room room = await _context.Rooms.FirstOrDefaultAsync(e => e.Name == name);
+
+            if (room == null)
+            {
+                return NotFound($"Room with name {name} not found.");
+            }
+
+            RoomResponse response = _converter.ModelToDto(room);
+            response.Building = await GetBuilding(room.BuildingId);
 
             return Ok(response);
         }
@@ -84,6 +118,15 @@ namespace LocatieService.Controllers
             _context.SaveChanges();
 
             return Ok("Successfully removed.");
+        }
+
+        private async Task<BuildingResponse> GetBuilding(Guid buildingId)
+        {
+            Building building = await _context.Buildings.FirstOrDefaultAsync(e => e.Id == buildingId); // Get building model.
+            BuildingResponse buildingResponse = _buildingConverter.ModelToDto(building); // Insert building to model.
+            buildingResponse.Address.City = await _context.Cities.FirstOrDefaultAsync(e => e.Id == building.Address.CityId); // Insert city into address.
+
+            return buildingResponse;
         }
     }
 }
