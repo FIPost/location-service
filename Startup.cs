@@ -25,7 +25,7 @@ namespace LocatieService
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            var connection = Configuration.GetConnectionString("DefaultConnection");
+            var connection = Configuration.GetValue<string>("ConnectionString");
 
             // Add context
             services.AddDbContext<LocatieContext>(
