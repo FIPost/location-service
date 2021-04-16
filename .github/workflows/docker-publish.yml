@@ -1,17 +1,12 @@
-name: Publish Docker Build
+
+name: Publish Docker image
 on:
-  push:
-    branches: [ master ]
-  pull_request:
-    branches: [ master ]
- 
+  release:
+    types: [published]
 jobs:
-  build:
+  push_to_registries:
+    name: Push Docker image to multiple registries
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        dotnet: ['3.1.x']
-    name: Dotnet ${{ matrix.dotnet }} sample
     steps:
       - uses: actions/checkout@v2
       - name: Setup dotnet
@@ -23,11 +18,20 @@ jobs:
         with:
             files: 'appsettings.json'
         env:
-            ConnectionString: "${{ secrets.DATABASE_CONNECTION }}"
+            ConnectionString: ${{ secrets.DATABASE_CONNECTION }}
           
-      - uses: actions/checkout@v2
-      - name: Setup dotnet
-        uses: actions/setup-dotnet@v1
+      - name: Push to Docker Hub
+        uses: docker/build-push-action@v1
         with:
-          dotnet-version: ${{ matrix.dotnet }}
-      - run: dotnet build *.csproj
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+          repository: fipost/location-service
+          tag_with_ref: true
+      - name: Push to GitHub Packages
+        uses: docker/build-push-action@v1
+        with:
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+          registry: docker.pkg.github.com
+          repository: fipost/location-service/location-service
+          tag_with_ref: true
