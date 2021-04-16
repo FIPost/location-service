@@ -20,6 +20,13 @@ dotnet run
 docker-compose up --build
 ```
 
+### Run external database
+Set your own database by editing the connectionstring in `appsettings.json`. <br/>
+Then run:
+```zsh
+docker run -p 5002:5002 --name location-service-app location-service
+```
+
 #### Error: Docker Network Missing
 If you get the following error:
 Network `ipost-network` declared as external, but could not be found. Run the following:
