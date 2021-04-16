@@ -5,7 +5,7 @@ ENV ASPNETCORE_ENVIRONMENT="Development"
 ENV ENVIRONMENT="Development"
 
 WORKDIR /app
-EXPOSE 5001
+EXPOSE 5002
 
 FROM mcr.microsoft.com/dotnet/core/sdk:3.1-buster AS build
 
