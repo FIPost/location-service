@@ -1,4 +1,4 @@
-name: Build .net api
+name: Build .NET API
 on:
   push:
     branches: [ master ]
