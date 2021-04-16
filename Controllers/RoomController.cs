@@ -26,8 +26,6 @@ namespace LocatieService.Controllers
         [HttpPost]
         public async Task<ActionResult> CreateRoom(RoomRequest request)
         {
-            Room Room = _converter.DtoToModel(request);
-
             Building building = await _context.Buildings.FirstOrDefaultAsync(e => e.Id == request.BuildingId);
 
             // Check if building exists.
@@ -36,7 +34,16 @@ namespace LocatieService.Controllers
                 return BadRequest("This building does not exist");
             }
 
-            _context.Rooms.Add(Room);
+            Room room = await _context.Rooms.FirstOrDefaultAsync(e => e.BuildingId == request.BuildingId && e.Name == request.Name);
+
+            if (room != null)
+            {
+                return Conflict($"City with name {request.Name} and buildingId {request.BuildingId} already exists.");
+            }
+
+            Room newRoom = _converter.DtoToModel(request);
+
+            _context.Rooms.Add(newRoom);
             await _context.SaveChangesAsync();
 
             return Created("Created", request);
@@ -63,6 +70,29 @@ namespace LocatieService.Controllers
         public async Task<ActionResult<RoomResponse>> GetRoomById(Guid id)
         {
             Room room = await _context.Rooms.FirstOrDefaultAsync(e => e.Id == id);
+
+            if (room == null)
+            {
+                return NotFound($"Room with id {id} not found.");
+            }
+
+            RoomResponse response = _converter.ModelToDto(room);
+            response.Building = await _context.Buildings.FirstOrDefaultAsync(e => e.Id == room.BuildingId); // Insert building to model.
+
+            return Ok(response);
+        }
+
+        [HttpGet]
+        [Route("name/{name}")]
+        public async Task<ActionResult<RoomResponse>> GetRoomByName(string name)
+        {
+            Room room = await _context.Rooms.FirstOrDefaultAsync(e => e.Name == name);
+
+            if (room == null)
+            {
+                return NotFound($"Room with name {name} not found.");
+            }
+
             RoomResponse response = _converter.ModelToDto(room);
             response.Building = await _context.Buildings.FirstOrDefaultAsync(e => e.Id == room.BuildingId); // Insert building to model.
 
