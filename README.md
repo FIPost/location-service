@@ -1,9 +1,10 @@
 ![ipost-logo](https://github.com/FIPost/docs/blob/master/assets/logo-name.png?raw=true)
 
+# Location Service
 [![Build .NET API](https://github.com/FIPost/locatieservice/actions/workflows/build.yml/badge.svg)](https://github.com/FIPost/locatieservice/actions/workflows/build.yml)
 [![Docker Publish](https://github.com/FIPost/locatieservice/actions/workflows/docker-publish.yml/badge.svg)](https://github.com/FIPost/locatieservice/actions/workflows/docker-publish.yml)
+[![Board Status](https://dev.azure.com/405273/a464a51f-a9d3-415a-983c-ecc9f9e1e117/e58d8192-5262-4682-856c-da357d004679/_apis/work/boardbadge/8203b7d2-166a-4745-ab05-5fc958846334)](https://dev.azure.com/405273/a464a51f-a9d3-415a-983c-ecc9f9e1e117/_boards/board/t/e58d8192-5262-4682-856c-da357d004679/Microsoft.RequirementCategory)
 
-# Location Service
 <h3 align="center">
   <a href="https://github.com/FIPost/docs">Documentation</a>
 </h3>
