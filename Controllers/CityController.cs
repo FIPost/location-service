@@ -1,9 +1,8 @@
-﻿using LocatieService.Database.Contexts;
-using LocatieService.Database.Converters;
+﻿using LocatieService.Database.Converters;
 using LocatieService.Database.Datamodels;
 using LocatieService.Database.Datamodels.Dtos;
+using LocatieService.Services;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -14,81 +13,65 @@ namespace LocatieService.Controllers
     [Route("api/[controller]")]
     public class CityController : Controller
     {
-        private readonly LocatieContext _context;
+        private readonly ICityService _service;
         private readonly IDtoConverter<City, CityRequest, CityResponse> _converter;
 
-        public CityController(LocatieContext context, IDtoConverter<City, CityRequest, CityResponse> converter)
+        public CityController(ICityService service, IDtoConverter<City, CityRequest, CityResponse> converter)
         {
-            _context = context;
+            _service = service;
             _converter = converter;
         }
 
         [HttpPost]
-        public async Task<ActionResult> CreateCity(CityRequest request)
+        public async Task<ActionResult<City>> CreateCity(CityRequest request)
         {
-            City city = await _context.Cities.FirstOrDefaultAsync(e => e.Name == request.Name);
+            // Check if city is a duplicate:
+            City city = await _service.GetCityByNameAsync(request.Name);
 
             if (city != null)
             {
                 return Conflict($"City with name {request.Name} already exists.");
             }
 
+            // Convert to model and insert into db.
             City newCity = _converter.DtoToModel(request);
-            _context.Cities.Add(newCity);
-            await _context.SaveChangesAsync();
 
-            return Created("Created", request);
+            return await _service.AddCityAsync(newCity);
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<CityResponse>>> GetAllCities()
+        public async Task<ActionResult<List<City>>> GetAllCities()
         {
-            return _converter.ModelToDto(await _context.Cities.ToListAsync());
+            return await _service.GetAllCitiesAsync();
         }
 
         [HttpGet]
         [Route("{id}")]
-        public async Task<ActionResult<CityResponse>> GetCityById(Guid id)
+        public async Task<ActionResult<City>> GetCityById(Guid id)
         {
-            City city = await _context.Cities.FirstOrDefaultAsync(e => e.Id == id);
-
-            if (city == null)
-            {
-                return NotFound($"City with id {id} not found.");
-            }
-
-            return Ok(_converter.ModelToDto(city));
+            return await _service.GetCityByIdAsync(id);
         }
 
         [HttpGet]
         [Route("name/{name}")]
-        public async Task<ActionResult<CityResponse>> GetCityByName(string name)
+        public async Task<ActionResult<City>> GetCityByName(string name)
         {
-            City city = await _context.Cities.FirstOrDefaultAsync(e => e.Name == name);
-
-            if (city == null)
-            {
-                return NotFound($"City with name {name} not found.");
-            }
-
-            return Ok(_converter.ModelToDto(city));
+            return await _service.GetCityByNameAsync(name);
         }
 
         [HttpDelete]
         [Route("{id}")]
-        public async Task<ActionResult> DeleteCityById(Guid id)
+        public async Task<ActionResult<City>> DeleteCityById(Guid id)
         {
-            City city = await _context.Cities.FirstOrDefaultAsync(e => e.Id == id);
+            // Get city object first:
+            City city = await _service.GetCityByIdAsync(id);
 
-            if (city == null) // Check if city exists.
+            if (city == null)
             {
-                return NotFound("Object not found");
+                return NotFound($"Entity with id {id} not found.");
             }
 
-            _context.Remove(city); // Remove record.
-            _context.SaveChanges();
-
-            return Ok("Successfully removed.");
+            return await _service.DeleteCityAsync(city);
         }
     }
 }

@@ -2,6 +2,8 @@ using LocatieService.Database.Contexts;
 using LocatieService.Database.Converters;
 using LocatieService.Database.Datamodels;
 using LocatieService.Database.Datamodels.Dtos;
+using LocatieService.Repositories;
+using LocatieService.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -55,6 +57,13 @@ namespace LocatieService
             services.AddScoped<IDtoConverter<City, CityRequest, CityResponse>, CityDtoConverter>();
             services.AddScoped<IDtoConverter<Building, BuildingRequest, BuildingResponse>, BuildingDtoConverter>();
             services.AddScoped<IDtoConverter<Room, RoomRequest, RoomResponse>, RoomDtoConverter>();
+
+            // Inject repositories.
+            services.AddTransient(typeof(IRepository<>), typeof(Repository<>));
+            services.AddTransient<ICityRepository, CityRepository>();
+
+            //Inject services.
+            services.AddTransient<ICityService, CityService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
