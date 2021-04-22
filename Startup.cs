@@ -34,10 +34,7 @@ namespace LocatieService
             services.AddControllers().AddNewtonsoftJson(options =>
                 options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
 
-            services.AddSwaggerGen(c =>
-            {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "LocatieService", Version = "v1" });
-            });
+            services.AddSwaggerGen();
 
             services.AddCors(options =>
             {
@@ -70,9 +67,6 @@ namespace LocatieService
 
             app.UseCors(MyAllowSpecificOrigins);
 
-            app.UseSwagger();
-            app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "LocatieService v1"));
-
             app.UseHttpsRedirection();
 
             app.UseRouting();
@@ -82,6 +76,21 @@ namespace LocatieService
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+            });
+
+            // Enable middleware to serve generated Swagger as a JSON endpoint.
+            app.UseSwagger(c =>
+            {
+                c.SerializeAsV2 = true;
+            });
+
+            // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.),
+            // specifying the Swagger JSON endpoint.
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "LocatieService");
+                // Serve the swagger UI at the app's root
+                c.RoutePrefix = string.Empty;
             });
         }
     }
