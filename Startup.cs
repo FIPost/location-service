@@ -88,7 +88,7 @@ namespace LocatieService
             // specifying the Swagger JSON endpoint.
             app.UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "API-Gateway");
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "LocatieService");
                 // Serve the swagger UI at the app's root
                 c.RoutePrefix = string.Empty;
             });
