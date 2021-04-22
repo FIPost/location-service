@@ -41,7 +41,7 @@ namespace LocatieService.Repositories
 
             if (building == null)
             {
-                throw new Exception($"Building with name {id} not found.");
+                throw new Exception($"Building with id {id} not found.");
             }
 
             BuildingResponse response = _converter.ModelToDto(building);

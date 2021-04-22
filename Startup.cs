@@ -59,10 +59,12 @@ namespace LocatieService
             services.AddTransient(typeof(IRepository<>), typeof(Repository<>));
             services.AddTransient<ICityRepository, CityRepository>();
             services.AddTransient<IBuildingRepository, BuildingRepository>();
+            services.AddTransient<IRoomRepository, RoomRepository>();
 
             //Inject services.
             services.AddTransient<ICityService, CityService>();
             services.AddTransient<IBuildingService, BuildingService>();
+            services.AddTransient<IRoomService, RoomService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
