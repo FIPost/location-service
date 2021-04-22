@@ -2,6 +2,7 @@
 using LocatieService.Database.Converters;
 using LocatieService.Database.Datamodels;
 using LocatieService.Database.Datamodels.Dtos;
+using LocatieService.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -14,108 +15,63 @@ namespace LocatieService.Controllers
     [Route("api/[controller]")]
     public class BuildingController : Controller
     {
-        private readonly LocatieContext _context;
+        private readonly IBuildingService _service;
+        private readonly ICityService _cityService;
         private readonly IDtoConverter<Building, BuildingRequest, BuildingResponse> _converter;
 
-        public BuildingController(LocatieContext context, IDtoConverter<Building, BuildingRequest, BuildingResponse> converter)
+        public BuildingController(IBuildingService service, ICityService cityService, IDtoConverter<Building, BuildingRequest, BuildingResponse> converter)
         {
-            _context = context;
+            _service = service;
             _converter = converter;
+            _cityService = cityService;
         }
 
         [HttpPost]
-        public async Task<ActionResult> CreateBuilding(BuildingRequest request)
+        public async Task<ActionResult<Building>> CreateBuilding(BuildingRequest request)
         {
-            Building building = await _context.Buildings.FirstOrDefaultAsync(
-                e => e.Name == request.Name
-                && e.Address.PostalCode == request.Address.PostalCode
-                && e.Address.Street == request.Address.Street);
-
-            if(building != null)
+            // Check if building already exists.
+            if (await _service.IsDuplicateAsync(_converter.DtoToModel(request)))
             {
                 return Conflict($"Building with name {request.Name} at this address already exists.");
             }
 
-            Building newBuilding = _converter.DtoToModel(request);
-            City city = await _context.Cities.FirstOrDefaultAsync(e => e.Id == request.Address.CityId);
+            Building building = _converter.DtoToModel(request);
+            City city = await _cityService.GetCityByIdAsync(request.Address.CityId);
 
             if (city == null)
             {
                 return BadRequest($"City with id {request.Address.CityId} does not exist.");
             }
 
-            _context.Buildings.Add(newBuilding);
-            await _context.SaveChangesAsync();
-
-            return Created("Created", request);
+            return await _service.AddBuildingAsync(building);
         }
 
         [HttpGet]
         public async Task<ActionResult<List<BuildingResponse>>> GetAllBuildings()
         {
-            List<Building> buildings = await _context.Buildings.ToListAsync();
-            List<BuildingResponse> responses = new();
-
-            foreach (Building building in buildings)
-            {
-                BuildingResponse response = _converter.ModelToDto(building);
-                response.Address.City = await _context.Cities.FirstOrDefaultAsync(e => e.Id == building.Address.CityId);
-
-                responses.Add(response);
-            }
-
-            return Ok(responses);
+            return await _service.GetAllBuildingsAsync();
         }
 
         [HttpGet]
         [Route("{id}")]
         public async Task<ActionResult<BuildingResponse>> GetBuildingById(Guid id)
         {
-            Building building = await _context.Buildings.FirstOrDefaultAsync(e => e.Id == id);
-
-            if (building == null)
-            {
-                return NotFound($"Building with id {id} not found.");
-            }
-
-            BuildingResponse response = _converter.ModelToDto(building);
-            response.Address.City = await _context.Cities.FirstOrDefaultAsync(e => e.Id == building.Address.CityId);
-
-            return Ok(response);
+            return await _service.GetBuildingByIdAsync(id);
         }
 
         [HttpGet]
         [Route("name/{name}")]
         public async Task<ActionResult<BuildingResponse>> GetBuildingByName(string name)
         {
-            Building building = await _context.Buildings.FirstOrDefaultAsync(e => e.Name == name);
-
-            if (building == null)
-            {
-                return NotFound($"Building with name {name} not found.");
-            }
-
-            BuildingResponse response = _converter.ModelToDto(building);
-            response.Address.City = await _context.Cities.FirstOrDefaultAsync(e => e.Id == building.Address.CityId);
-
-            return Ok(response);
+            return await _service.GetBuildingByNameAsync(name);
         }
 
         [HttpDelete]
         [Route("{id}")]
-        public async Task<ActionResult> DeleteBuildingById(Guid id)
+        public async Task<ActionResult<Building>> DeleteBuildingById(Guid id)
         {
-            Building building = await _context.Buildings.FirstOrDefaultAsync(e => e.Id == id);
-
-            if (building == null) // Check if building exists.
-            {
-                return NotFound("Object not found");
-            }
-
-            _context.Remove(building); // Remove record.
-            _context.SaveChanges();
-
-            return Ok("Successfully removed.");
+            Building building = await _service.GetRawByIdAsync(id);
+            return await _service.DeleteBuildingAsync(building);
         }
     }
 }
