@@ -22,8 +22,9 @@ namespace LocatieService.Services
             return await _repository.AddAsync(building);
         }
 
-        public async Task<Building> DeleteBuildingAsync(Building building)
+        public async Task<Building> DeleteBuildingByIdAsync(Guid id)
         {
+            Building building = await GetRawByIdAsync(id); 
             return await _repository.DeleteAsync(building);
         }
 

@@ -41,7 +41,7 @@ namespace LocatieService.Services
             return await _repository.GetByNameAsync(name);
         }
 
-        public async Task<City> UpdateCity(City city)
+        public async Task<City> UpdateCityAsync(City city)
         {
             return await _repository.UpdateAsync(city);
         }

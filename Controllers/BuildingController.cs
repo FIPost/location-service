@@ -70,8 +70,7 @@ namespace LocatieService.Controllers
         [Route("{id}")]
         public async Task<ActionResult<Building>> DeleteBuildingById(Guid id)
         {
-            Building building = await _service.GetRawByIdAsync(id);
-            return await _service.DeleteBuildingAsync(building);
+            return await _service.DeleteBuildingByIdAsync(id);
         }
     }
 }

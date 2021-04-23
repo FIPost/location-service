@@ -9,7 +9,7 @@ namespace LocatieService.Repositories
 {
     public class CityRepository : Repository<City>, ICityRepository
     {
-        public CityRepository(LocatieContext locatieContext) : base(locatieContext) { }
+        public CityRepository(LocatieContext context) : base(context) { }
 
         public async Task<City> GetByIdAsync(Guid id)
         {

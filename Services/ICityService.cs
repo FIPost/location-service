@@ -11,7 +11,7 @@ namespace LocatieService.Services
         Task<List<City>> GetAllCitiesAsync();
         Task<City> GetCityByIdAsync(Guid id);
         Task<City> GetCityByNameAsync(string name);
-        Task<City> UpdateCity(City city);
+        Task<City> UpdateCityAsync(City city);
         Task<City> DeleteCityAsync(City city);
     }
 }
