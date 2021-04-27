@@ -14,7 +14,7 @@ services:
     location_db:
         image: "mcr.microsoft.com/mssql/server"
         volumes:
-          - sqlvolume:/var/opt/mssql
+          - location_volume:/var/opt/mssql
 
         environment:
             SA_PASSWORD: "Your_password123"
@@ -25,7 +25,7 @@ services:
         networks: 
             - ipost-network
 volumes:
-  sqlvolume:
+  location_volume:
 
 networks:
     ipost-network:
