@@ -1,5 +1,4 @@
 using LocatieService.Controllers;
-using LocatieService.Database.Converters;
 using LocatieService.Database.Datamodels;
 using LocatieService.Database.Datamodels.Dtos;
 using LocatieService.Services;
