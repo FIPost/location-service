@@ -1,49 +1,86 @@
-﻿using LocatieService.Database.Datamodels;
-using LocatieService.Repositories;
+﻿using LocatieService.Database.Contexts;
+using LocatieService.Database.Converters;
+using LocatieService.Database.Datamodels;
+using LocatieService.Database.Datamodels.Dtos;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace LocatieService.Services
 {
     public class CityService : ICityService
     {
-        private readonly ICityRepository _repository;
+        private readonly LocatieContext _context;
+        private readonly IDtoConverter<City, CityRequest, CityResponse> _converter;
 
-        public CityService(ICityRepository repository)
+        public CityService(LocatieContext context,
+            IDtoConverter<City, CityRequest, CityResponse> converter)
         {
-            _repository = repository;
+            _context = context;
+            _converter = converter;
         }
 
-        public async Task<City> AddCityAsync(City city)
+        public async Task<City> AddAsync(CityRequest request)
         {
-            return await _repository.AddAsync(city);
+            // Check if city is a duplicate:
+            City city = _converter.DtoToModel(request);
+            City duplicate = await _context.Cities.FirstOrDefaultAsync(e => e.Name == city.Name);
+
+            if (duplicate != null)
+            {
+                throw new Exception($"City with name {city.Name} already exists.");
+            }
+
+            await _context.AddAsync(city);
+            await _context.SaveChangesAsync();
+
+            return city;
         }
 
-        public async Task<City> DeleteCityAsync(City city)
+        public async Task<List<City>> GetAllAsync()
         {
-            return await _repository.DeleteAsync(city);
+            return await _context.Cities.ToListAsync();
         }
 
-        public async Task<List<City>> GetAllCitiesAsync()
+        public async Task<City> GetByIdAsync(Guid id)
         {
-            return await _repository.GetAllAsync();
+            City city = await _context.Cities.FirstOrDefaultAsync(e => e.Id == id);
+
+            if (city == null)
+            {
+                throw new Exception($"Could not find city with id {id}.");
+            }
+
+            return city;
         }
 
-        public async Task<City> GetCityByIdAsync(Guid id)
+        public async Task<City> GetByNameAsync(string name)
         {
-            return await _repository.GetByIdAsync(id);
+            City city = await _context.Cities.FirstOrDefaultAsync(e => e.Name == name);
+
+            if (city == null)
+            {
+                throw new Exception($"Could not find city with name {name}.");
+            }
+
+            return city;
         }
 
-        public async Task<City> GetCityByNameAsync(string name)
+        public async Task<City> UpdateAsync(Guid id, CityRequest request)
         {
-            return await _repository.GetByNameAsync(name);
+            City city = _converter.DtoToModel(request);
+            city.Id = id;
+
+            _context.Update(city);
+            await _context.SaveChangesAsync();
+
+            return city;
         }
 
-        public async Task<City> UpdateCityAsync(City city)
+        public Task<City> DeleteAsync(Guid id)
         {
-            return await _repository.UpdateAsync(city);
+            throw new NotImplementedException();
         }
     }
 }

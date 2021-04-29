@@ -1,10 +1,7 @@
-﻿using LocatieService.Database.Contexts;
-using LocatieService.Database.Converters;
-using LocatieService.Database.Datamodels;
+﻿using LocatieService.Database.Datamodels;
 using LocatieService.Database.Datamodels.Dtos;
 using LocatieService.Services;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -16,61 +13,52 @@ namespace LocatieService.Controllers
     public class BuildingController : Controller
     {
         private readonly IBuildingService _service;
-        private readonly ICityService _cityService;
-        private readonly IDtoConverter<Building, BuildingRequest, BuildingResponse> _converter;
 
-        public BuildingController(IBuildingService service, ICityService cityService, IDtoConverter<Building, BuildingRequest, BuildingResponse> converter)
+        public BuildingController(IBuildingService service)
         {
             _service = service;
-            _converter = converter;
-            _cityService = cityService;
         }
 
         [HttpPost]
-        public async Task<ActionResult<Building>> CreateBuilding(BuildingRequest request)
+        public async Task<ActionResult<BuildingResponse>> AddBuilding(BuildingRequest request)
         {
-            // Check if building already exists.
-            if (await _service.IsDuplicateAsync(_converter.DtoToModel(request)))
-            {
-                return Conflict($"Building with name {request.Name} at this address already exists.");
-            }
-
-            Building building = _converter.DtoToModel(request);
-            City city = await _cityService.GetCityByIdAsync(request.Address.CityId);
-
-            if (city == null)
-            {
-                return BadRequest($"City with id {request.Address.CityId} does not exist.");
-            }
-
-            return await _service.AddBuildingAsync(building);
+            return await _service.AddAsync(request);
         }
 
         [HttpGet]
         public async Task<ActionResult<List<BuildingResponse>>> GetAllBuildings()
         {
-            return await _service.GetAllBuildingsAsync();
+            return await _service.GetAllAsync();
         }
 
         [HttpGet]
         [Route("{id}")]
         public async Task<ActionResult<BuildingResponse>> GetBuildingById(Guid id)
         {
-            return await _service.GetBuildingByIdAsync(id);
+            return await _service.GetByIdAsync(id);
         }
 
         [HttpGet]
         [Route("name/{name}")]
         public async Task<ActionResult<BuildingResponse>> GetBuildingByName(string name)
         {
-            return await _service.GetBuildingByNameAsync(name);
+            return await _service.GetByNameAsync(name);
+        }
+
+        [HttpPut]
+        [Route("{id}")]
+        public async Task<ActionResult<BuildingResponse>> UpdateBuilding(Guid id, BuildingRequest request)
+        {
+            return await _service.UpdateAsync(id, request);
         }
 
         [HttpDelete]
         [Route("{id}")]
         public async Task<ActionResult<Building>> DeleteBuildingById(Guid id)
         {
-            return await _service.DeleteBuildingByIdAsync(id);
+            await _service.DeleteAsync(id);
+
+            return Ok();
         }
     }
 }

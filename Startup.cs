@@ -2,7 +2,6 @@ using LocatieService.Database.Contexts;
 using LocatieService.Database.Converters;
 using LocatieService.Database.Datamodels;
 using LocatieService.Database.Datamodels.Dtos;
-using LocatieService.Repositories;
 using LocatieService.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -53,12 +52,6 @@ namespace LocatieService
             services.AddScoped<IDtoConverter<City, CityRequest, CityResponse>, CityDtoConverter>();
             services.AddScoped<IDtoConverter<Building, BuildingRequest, BuildingResponse>, BuildingDtoConverter>();
             services.AddScoped<IDtoConverter<Room, RoomRequest, RoomResponse>, RoomDtoConverter>();
-
-            // Inject repositories.
-            services.AddTransient(typeof(IRepository<>), typeof(Repository<>));
-            services.AddTransient<ICityRepository, CityRepository>();
-            services.AddTransient<IBuildingRepository, BuildingRepository>();
-            services.AddTransient<IRoomRepository, RoomRepository>();
 
             //Inject services.
             services.AddTransient<ICityService, CityService>();

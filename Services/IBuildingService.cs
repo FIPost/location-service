@@ -9,13 +9,13 @@ namespace LocatieService.Services
 {
     public interface IBuildingService
     {
-        Task<Building> AddBuildingAsync(Building building);
-        Task<List<BuildingResponse>> GetAllBuildingsAsync();
-        Task<BuildingResponse> GetBuildingByIdAsync(Guid id);
+        Task<BuildingResponse> AddAsync(BuildingRequest request);
+        Task<List<BuildingResponse>> GetAllAsync();
+        Task<BuildingResponse> GetByIdAsync(Guid id);
         Task<Building> GetRawByIdAsync(Guid id);
-        Task<BuildingResponse> GetBuildingByNameAsync(string name);
-        Task<Building> UpdateBuilding(Building building);
-        Task<Building> DeleteBuildingByIdAsync(Guid id);
+        Task<BuildingResponse> GetByNameAsync(string name);
+        Task<BuildingResponse> UpdateAsync(Guid id, BuildingRequest request);
+        Task<BuildingResponse> DeleteAsync(Guid id);
         Task<bool> IsDuplicateAsync(Building building);
     }
 }

@@ -2,19 +2,18 @@
 using LocatieService.Database.Datamodels.Dtos;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace LocatieService.Services
 {
     public interface IRoomService
     {
-        Task<Room> AddRoomAsync(Room room);
-        Task<List<RoomResponse>> GetAllRoomsAsync();
-        Task<RoomResponse> GetRoomByIdAsync(Guid id);
+        Task<RoomResponse> AddAsync(RoomRequest request);
+        Task<List<RoomResponse>> GetAllAsync();
+        Task<RoomResponse> GetByIdAsync(Guid id);
         Task<Room> GetRawByIdAsync(Guid id);
-        Task<RoomResponse> GetRoomByNameAsync(string name);
-        Task<Room> UpdateRoom(Room room);
+        Task<RoomResponse> GetByNameAsync(string name);
+        Task<RoomResponse> UpdateAsync(Guid id, RoomRequest request);
         Task<Room> DeleteRoomAsync(Room room);
         Task<bool> IsDuplicateAsync(Room room);
     }
