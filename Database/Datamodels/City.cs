@@ -1,5 +1,5 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
+﻿using Newtonsoft.Json;
+using System;
 
 namespace LocatieService.Database.Datamodels
 {
@@ -7,6 +7,7 @@ namespace LocatieService.Database.Datamodels
     {
         public Guid Id { get; set; }
         public string Name { get; set; }
+        [JsonIgnore]
         public bool IsActive { get; set; } = true;
     }
 }

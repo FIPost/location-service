@@ -5,6 +5,7 @@ using LocatieService.Database.Datamodels.Dtos;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace LocatieService.Services
@@ -41,7 +42,7 @@ namespace LocatieService.Services
 
         public async Task<List<RoomResponse>> GetAllAsync()
         {
-            List<Room> rooms = await _context.Rooms.ToListAsync();
+            List<Room> rooms = await _context.Rooms.Where(e => e.IsActive).ToListAsync();
             List<RoomResponse> responses = new();
 
             // Add buildings:
@@ -103,7 +104,6 @@ namespace LocatieService.Services
         {
             // Set inactive:
             Room room = await GetRawByIdAsync(id);
-            room.Id = id; // Id is needed for updating record.
             room.IsActive = false;
 
             // Update record:
