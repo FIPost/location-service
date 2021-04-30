@@ -48,7 +48,10 @@ namespace LocatieService.Services
             foreach (Room room in rooms)
             {
                 RoomResponse response = _converter.ModelToDto(room);
-                response.Building = _buildingConverter.ModelToDto(await _context.Buildings.FirstOrDefaultAsync(e => e.Id == room.BuildingId));
+                Building building = await _context.Buildings.FirstOrDefaultAsync(e => e.Id == room.BuildingId); // Get building model.
+                BuildingResponse buildingResponse = _buildingConverter.ModelToDto(building); // Insert building to model.
+                buildingResponse.Address.City = await _context.Cities.FirstOrDefaultAsync(e => e.Id == building.Address.CityId); // Insert city into address.
+                response.Building = buildingResponse;
 
                 responses.Add(response);
             }
@@ -116,7 +119,10 @@ namespace LocatieService.Services
         private async Task<RoomResponse> CreateResponseAsync(Room room)
         {
             RoomResponse response = _converter.ModelToDto(room);
-            response.Building = _buildingConverter.ModelToDto(await _context.Buildings.FirstOrDefaultAsync(e => e.Id == room.BuildingId));
+            Building building = await _context.Buildings.FirstOrDefaultAsync(e => e.Id == room.BuildingId); // Get building model.
+            BuildingResponse buildingResponse = _buildingConverter.ModelToDto(building); // Insert building to model.
+            buildingResponse.Address.City = await _context.Cities.FirstOrDefaultAsync(e => e.Id == building.Address.CityId); // Insert city into address.
+            response.Building = buildingResponse;
 
             return response;
         }
