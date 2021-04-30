@@ -13,6 +13,6 @@ namespace LocatieService.Services
         Task<City> GetByIdAsync(Guid id);
         Task<City> GetByNameAsync(string name);
         Task<City> UpdateAsync(Guid id, CityRequest request);
-        Task<City> DeleteAsync(Guid id);
+        Task DeleteAsync(Guid id);
     }
 }

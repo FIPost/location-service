@@ -78,9 +78,16 @@ namespace LocatieService.Services
             return city;
         }
 
-        public Task<City> DeleteAsync(Guid id)
+        public async Task DeleteAsync(Guid id)
         {
-            throw new NotImplementedException();
+            // Set inactive:
+            City city = await GetByIdAsync(id);
+            city.Id = id; // Id is needed for updating record.
+            city.IsActive = false;
+
+            // Update record:
+            _context.Update(city);
+            await _context.SaveChangesAsync();
         }
     }
 }

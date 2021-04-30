@@ -67,7 +67,14 @@ namespace LocatieService.Services
 
         public async Task<Building> GetRawByIdAsync(Guid id)
         {
-            return await _context.Buildings.FirstOrDefaultAsync(e => e.Id == id);
+            Building building = await _context.Buildings.FirstOrDefaultAsync(e => e.Id == id);
+            
+            if (building == null)
+            {
+                throw new Exception($"Building with id {id} not found.");
+            }
+
+            return building;
         }
 
         public async Task<BuildingResponse> GetByNameAsync(string name)
@@ -92,9 +99,16 @@ namespace LocatieService.Services
             return await CreateResponseAsync(building);
         }
 
-        public Task<BuildingResponse> DeleteAsync(Guid id)
+        public async Task DeleteAsync(Guid id)
         {
-            throw new NotImplementedException();
+            // Set inactive:
+            Building building = await GetRawByIdAsync(id);
+            building.Id = id; // Id is needed for updating record.
+            building.IsActive = false;
+
+            // Update record:
+            _context.Update(building);
+            await _context.SaveChangesAsync();
         }
 
         public async Task<bool> IsDuplicateAsync(Building building)

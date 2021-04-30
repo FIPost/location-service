@@ -54,11 +54,11 @@ namespace LocatieService.Controllers
 
         [HttpDelete]
         [Route("{id}")]
-        public async Task<ActionResult<Building>> DeleteBuildingById(Guid id)
+        public async Task<ActionResult> DeleteBuildingById(Guid id)
         {
             await _service.DeleteAsync(id);
 
-            return Ok();
+            return NoContent();
         }
     }
 }

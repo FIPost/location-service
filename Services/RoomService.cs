@@ -99,9 +99,16 @@ namespace LocatieService.Services
             return await CreateResponseAsync(room);
         }
 
-        public Task<Room> DeleteRoomAsync(Room room)
+        public async Task DeleteRoomAsync(Guid id)
         {
-            throw new NotImplementedException();
+            // Set inactive:
+            Room room = await GetRawByIdAsync(id);
+            room.Id = id; // Id is needed for updating record.
+            room.IsActive = false;
+
+            // Update record:
+            _context.Update(room);
+            await _context.SaveChangesAsync();
         }
 
         public async Task<bool> IsDuplicateAsync(Room room)

@@ -15,7 +15,7 @@ namespace LocatieService.Services
         Task<Building> GetRawByIdAsync(Guid id);
         Task<BuildingResponse> GetByNameAsync(string name);
         Task<BuildingResponse> UpdateAsync(Guid id, BuildingRequest request);
-        Task<BuildingResponse> DeleteAsync(Guid id);
+        Task DeleteAsync(Guid id);
         Task<bool> IsDuplicateAsync(Building building);
     }
 }
