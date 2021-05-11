@@ -58,7 +58,7 @@ namespace LocatieService.Controllers
         {
             await _service.DeleteRoomAsync(id);
 
-            return NoContent();
+            return NoContent(); // Delete mapping should return 204
         }
     }
 }

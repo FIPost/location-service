@@ -55,11 +55,11 @@ namespace LocatieService.Controllers
 
         [HttpDelete]
         [Route("{id}")]
-        public async Task<ActionResult> DeleteCityById(Guid id)
+        public async Task<ActionResult<City>> DeleteCityById(Guid id)
         {
             await _service.DeleteAsync(id);
 
-            return NoContent();
+            return NoContent(); // Delete mapping should return 204
         }
     }
 }
