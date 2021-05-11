@@ -15,7 +15,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\LocatieService.csproj" />
-    <ProjectReference Include="..\locatieservice\LocatieService.csproj" />
   </ItemGroup>
 
 </Project>
