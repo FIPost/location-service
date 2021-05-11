@@ -23,7 +23,7 @@ namespace LocatieService.Controllers
         [HttpPost]
         public async Task<ActionResult<City>> AddCity(CityRequest request)
         {
-            return Ok(await _service.AddAsync(request));
+            return await _service.AddAsync(request);
         }
 
         [HttpGet]
@@ -57,9 +57,7 @@ namespace LocatieService.Controllers
         [Route("{id}")]
         public async Task<ActionResult<City>> DeleteCityById(Guid id)
         {
-            await _service.DeleteAsync(id);
-
-            return NoContent(); // Delete mapping should return 204
+            return await _service.DeleteAsync(id);
         }
     }
 }

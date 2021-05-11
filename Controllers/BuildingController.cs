@@ -56,9 +56,7 @@ namespace LocatieService.Controllers
         [Route("{id}")]
         public async Task<ActionResult<Building>> DeleteBuildingById(Guid id)
         {
-            await _service.DeleteAsync(id);
-
-            return NoContent();  // Delete mapping should return 204
+            return await _service.DeleteAsync(id);
         }
     }
 }

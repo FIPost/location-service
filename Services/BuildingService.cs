@@ -2,6 +2,7 @@
 using LocatieService.Database.Converters;
 using LocatieService.Database.Datamodels;
 using LocatieService.Database.Datamodels.Dtos;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -10,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace LocatieService.Services
 {
-    public class BuildingService : IBuildingService
+    public class BuildingService : Controller, IBuildingService
     {
         private readonly LocatieContext _context;
         private readonly IDtoConverter<Building, BuildingRequest, BuildingResponse> _converter;
@@ -22,22 +23,22 @@ namespace LocatieService.Services
         }
 
 
-        public async Task<BuildingResponse> AddAsync(BuildingRequest request)
+        public async Task<ActionResult<BuildingResponse>> AddAsync(BuildingRequest request)
         {
             Building building = _converter.DtoToModel(request);
 
             if (await IsDuplicateAsync(building))
             {
-                throw new Exception("This building already exists.");
+                return Conflict("This building already exists.");
             }
 
             await _context.AddAsync(building);
             await _context.SaveChangesAsync();
 
-            return await CreateResponseAsync(building);
+            return CreatedAtAction("AddBuilding", await CreateResponseAsync(building));
         }
 
-        public async Task<List<BuildingResponse>> GetAllAsync()
+        public async Task<ActionResult<List<BuildingResponse>>> GetAllAsync()
         {
             List<Building> buildings = await _context.Buildings.Where(e => e.IsActive).ToListAsync();
             List<BuildingResponse> responses = new();
@@ -51,45 +52,33 @@ namespace LocatieService.Services
                 responses.Add(response);
             }
 
-            return responses;
+            return Ok(responses);
         }
 
-        public async Task<BuildingResponse> GetByIdAsync(Guid id)
+        public async Task<ActionResult<BuildingResponse>> GetByIdAsync(Guid id)
         {
             Building building = await _context.Buildings.FirstOrDefaultAsync(e => e.Id == id);
 
             if (building == null)
             {
-                throw new Exception($"Building with id {id} not found.");
+                return NotFound($"Building with id {id} not found.");
             }
 
-            return await CreateResponseAsync(building);
+            return Ok(await CreateResponseAsync(building));
         }
 
-        public async Task<Building> GetRawByIdAsync(Guid id)
-        {
-            Building building = await _context.Buildings.FirstOrDefaultAsync(e => e.Id == id);
-            
-            if (building == null)
-            {
-                throw new Exception($"Building with id {id} not found.");
-            }
-
-            return building;
-        }
-
-        public async Task<BuildingResponse> GetByNameAsync(string name)
+        public async Task<ActionResult<BuildingResponse>> GetByNameAsync(string name)
         {
             Building building = await _context.Buildings.FirstOrDefaultAsync(e => e.Name == name);
 
             if (building == null)
             {
-                throw new Exception($"Building with name {name} not found.");
+                return NotFound($"Building with name {name} not found.");
             }
 
-            return await CreateResponseAsync(building);
+            return Ok(await CreateResponseAsync(building));
         }
-        public async Task<BuildingResponse> UpdateAsync(Guid id, BuildingRequest request)
+        public async Task<ActionResult<BuildingResponse>> UpdateAsync(Guid id, BuildingRequest request)
         {
             Building building = _converter.DtoToModel(request);
             building.Id = id;
@@ -97,20 +86,26 @@ namespace LocatieService.Services
             _context.Update(building);
             await _context.SaveChangesAsync();
 
-            return await CreateResponseAsync(building);
+            return Ok(await CreateResponseAsync(building));
         }
 
-        public async Task DeleteAsync(Guid id)
+        public async Task<ActionResult> DeleteAsync(Guid id)
         {
+            Building building = await _context.Buildings.FirstOrDefaultAsync(e => e.Id == id);
+
+            if (building == null)
+            {
+                return NotFound($"Building with id {id} not found.");
+            }
+
             // Set inactive:
-            Building building = await GetRawByIdAsync(id);
             building.IsActive = false;
 
             // Get all rooms from this building:
             List<Room> rooms = await _context.Rooms.Where(e => e.BuildingId == id).ToListAsync();
 
             // Set all rooms to inactive:
-            foreach(Room room in rooms)
+            foreach (Room room in rooms)
             {
                 room.IsActive = false;
                 // Update record:
@@ -121,14 +116,17 @@ namespace LocatieService.Services
             // Update record:
             _context.Update(building);
             await _context.SaveChangesAsync();
+
+            return NoContent();
         }
 
-        public async Task<bool> IsDuplicateAsync(Building building)
+        private async Task<bool> IsDuplicateAsync(Building building)
         {
             Building duplicate = await _context.Buildings.FirstOrDefaultAsync(
                 e => e.Name == building.Name
                 && e.Address.PostalCode == building.Address.PostalCode
-                && e.Address.Street == building.Address.Street);
+                && e.Address.Street == building.Address.Street
+                && e.IsActive);
 
             if (duplicate != null)
             {

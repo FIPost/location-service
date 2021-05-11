@@ -1,5 +1,6 @@
 ﻿using LocatieService.Database.Datamodels;
 using LocatieService.Database.Datamodels.Dtos;
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -8,13 +9,11 @@ namespace LocatieService.Services
 {
     public interface IRoomService
     {
-        Task<RoomResponse> AddAsync(RoomRequest request);
-        Task<List<RoomResponse>> GetAllAsync();
-        Task<RoomResponse> GetByIdAsync(Guid id);
-        Task<Room> GetRawByIdAsync(Guid id);
-        Task<RoomResponse> GetByNameAsync(string name);
-        Task<RoomResponse> UpdateAsync(Guid id, RoomRequest request);
-        Task DeleteRoomAsync(Guid id);
-        Task<bool> IsDuplicateAsync(Room room);
+        Task<ActionResult<RoomResponse>> AddAsync(RoomRequest request);
+        Task<ActionResult<List<RoomResponse>>> GetAllAsync();
+        Task<ActionResult<RoomResponse>> GetByIdAsync(Guid id);
+        Task<ActionResult<RoomResponse>> GetByNameAsync(string name);
+        Task<ActionResult<RoomResponse>> UpdateAsync(Guid id, RoomRequest request);
+        Task<ActionResult> DeleteRoomAsync(Guid id);
     }
 }

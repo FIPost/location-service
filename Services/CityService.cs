@@ -2,6 +2,7 @@
 using LocatieService.Database.Converters;
 using LocatieService.Database.Datamodels;
 using LocatieService.Database.Datamodels.Dtos;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -10,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace LocatieService.Services
 {
-    public class CityService : ICityService
+    public class CityService : Controller, ICityService
     {
         private readonly LocatieContext _context;
         private readonly IDtoConverter<City, CityRequest, CityResponse> _converter;
@@ -22,53 +23,53 @@ namespace LocatieService.Services
             _converter = converter;
         }
 
-        public async Task<City> AddAsync(CityRequest request)
+        public async Task<ActionResult<City>> AddAsync(CityRequest request)
         {
             // Check if city is a duplicate:
             City city = _converter.DtoToModel(request);
-            City duplicate = await _context.Cities.FirstOrDefaultAsync(e => e.Name == city.Name);
+            City duplicate = await _context.Cities.FirstOrDefaultAsync(e => e.Name == city.Name && e.IsActive);
 
             if (duplicate != null)
             {
-                throw new Exception($"City with name {city.Name} already exists.");
+                return Conflict($"City with name {city.Name} already exists.");
             }
 
             await _context.AddAsync(city);
             await _context.SaveChangesAsync();
 
-            return city;
+            return CreatedAtAction("AddCity", city);
         }
 
-        public async Task<List<City>> GetAllAsync()
+        public async Task<ActionResult<List<City>>> GetAllAsync()
         {
             return await _context.Cities.Where(e => e.IsActive).ToListAsync();
         }
 
-        public async Task<City> GetByIdAsync(Guid id)
+        public async Task<ActionResult<City>> GetByIdAsync(Guid id)
         {
             City city = await _context.Cities.FirstOrDefaultAsync(e => e.Id == id);
 
             if (city == null)
             {
-                throw new Exception($"Could not find city with id {id}.");
+                return NotFound($"Could not find city with id {id}.");
             }
 
-            return city;
+            return Ok(city);
         }
 
-        public async Task<City> GetByNameAsync(string name)
+        public async Task<ActionResult<City>> GetByNameAsync(string name)
         {
             City city = await _context.Cities.FirstOrDefaultAsync(e => e.Name == name);
 
             if (city == null)
             {
-                throw new Exception($"Could not find city with name {name}.");
+                return NotFound($"Could not find city with name {name}.");
             }
 
-            return city;
+            return Ok(city);
         }
 
-        public async Task<City> UpdateAsync(Guid id, CityRequest request)
+        public async Task<ActionResult<City>> UpdateAsync(Guid id, CityRequest request)
         {
             City city = _converter.DtoToModel(request);
             city.Id = id;
@@ -76,18 +77,48 @@ namespace LocatieService.Services
             _context.Update(city);
             await _context.SaveChangesAsync();
 
-            return city;
+            return Ok(city);
         }
 
-        public async Task DeleteAsync(Guid id)
+        public async Task<ActionResult> DeleteAsync(Guid id)
         {
+            City city = await _context.Cities.FirstOrDefaultAsync(e => e.Id == id);
+
+            if (city == null)
+            {
+                return NotFound($"Could not find city with id {id}.");
+            }
+
             // Set inactive:
-            City city = await GetByIdAsync(id);
             city.IsActive = false;
+
+            // Get all buildings for this city:
+            List<Building> buildings = await _context.Buildings.Where(e => e.Address.CityId == id).ToListAsync();
+
+            foreach(Building building in buildings)
+            {
+                // Set inactive:
+                building.IsActive = false;
+                _context.Update(building);
+                await _context.SaveChangesAsync();
+
+                // Get all rooms for building:
+                List<Room> rooms = await _context.Rooms.Where(e => e.BuildingId == building.Id).ToListAsync();
+
+                // Set all rooms to inactive:
+                foreach (Room room in rooms)
+                {
+                    room.IsActive = false;
+                    _context.Update(room);
+                    await _context.SaveChangesAsync();
+                }
+            }
 
             // Update record:
             _context.Update(city);
             await _context.SaveChangesAsync();
+
+            return NoContent();
         }
     }
 }
