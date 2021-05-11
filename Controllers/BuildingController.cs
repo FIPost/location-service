@@ -35,7 +35,14 @@ namespace LocatieService.Controllers
         [Route("{id}")]
         public async Task<ActionResult<BuildingResponse>> GetBuildingById(Guid id)
         {
-            return await _service.GetByIdAsync(id);
+            try
+            {
+                return await _service.GetByIdAsync(id);
+            }
+            catch (Exception e)
+            {
+                return NotFound(e.Message);
+            }
         }
 
         [HttpGet]
