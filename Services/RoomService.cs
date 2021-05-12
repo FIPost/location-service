@@ -2,6 +2,7 @@
 using LocatieService.Database.Converters;
 using LocatieService.Database.Datamodels;
 using LocatieService.Database.Datamodels.Dtos;
+using LocatieService.helpers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -11,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace LocatieService.Services
 {
-    public class RoomService : Controller, IRoomService
+    public class RoomService : IRoomService
     {
         private readonly LocatieContext _context;
         private readonly IDtoConverter<Room, RoomRequest, RoomResponse> _converter;
@@ -26,22 +27,22 @@ namespace LocatieService.Services
             _buildingConverter = buildingConverter;
         }
 
-        public async Task<ActionResult<RoomResponse>> AddAsync(RoomRequest request)
+        public async Task<RoomResponse> AddAsync(RoomRequest request)
         {
             Room room = _converter.DtoToModel(request);
 
             if (await IsDuplicateAsync(room))
             {
-                return Conflict("This room already exists.");
+                throw new DuplicateException("This room already exists.");
             }
 
             await _context.AddAsync(room);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("AddRoom", await CreateResponseAsync(room));
+            return await CreateResponseAsync(room);
         }
 
-        public async Task<ActionResult<List<RoomResponse>>> GetAllAsync()
+        public async Task<List<RoomResponse>> GetAllAsync()
         {
             List<Room> rooms = await _context.Rooms.Where(e => e.IsActive).ToListAsync();
             List<RoomResponse> responses = new();
@@ -49,60 +50,64 @@ namespace LocatieService.Services
             // Add buildings:
             foreach (Room room in rooms)
             {
-                RoomResponse response = _converter.ModelToDto(room);
-                Building building = await _context.Buildings.FirstOrDefaultAsync(e => e.Id == room.BuildingId); // Get building model.
-                BuildingResponse buildingResponse = _buildingConverter.ModelToDto(building); // Insert building to model.
-                buildingResponse.Address.City = await _context.Cities.FirstOrDefaultAsync(e => e.Id == building.Address.CityId); // Insert city into address.
-                response.Building = buildingResponse;
-
-                responses.Add(response);
+                responses.Add(await CreateResponseAsync(room));
             }
 
-            return Ok(responses);
+            return responses;
         }
 
-        public async Task<ActionResult<RoomResponse>> GetByIdAsync(Guid id)
+        public async Task<RoomResponse> GetByIdAsync(Guid id)
         {
             Room room = await _context.Rooms.FirstOrDefaultAsync(e => e.Id == id);
 
             if (room == null)
             {
-                return NotFound($"Room with id {id} not found.");
+                throw new NotFoundException($"Room with id {id} not found.");
             }
 
-            return Ok(await CreateResponseAsync(room));
+            return await CreateResponseAsync(room);
         }
 
-        public async Task<ActionResult<RoomResponse>> GetByNameAsync(string name)
+        public async Task<RoomResponse> GetByNameAsync(string name)
         {
             Room room = await _context.Rooms.FirstOrDefaultAsync(e => e.Name == name);
 
             if (room == null)
             {
-                return NotFound($"Room with name {name} not found.");
+                throw new NotFoundException($"Room with name {name} not found.");
             }
 
-            return Ok(await CreateResponseAsync(room));
+            return await CreateResponseAsync(room);
         }
 
-        public async Task<ActionResult<RoomResponse>> UpdateAsync(Guid id, RoomRequest request)
+        public async Task<RoomResponse> UpdateAsync(Guid id, RoomRequest request)
         {
             Room room = _converter.DtoToModel(request);
             room.Id = id;
 
+            if (!await _context.Rooms.AnyAsync(r => r.Id == id))
+            {
+                throw new DuplicateException($"Room with id {id} not found.");
+            }
+
+            if (await IsDuplicateAsync(room))
+            {
+                throw new DuplicateException("This room already exists.");
+            }
+
             _context.Update(room);
             await _context.SaveChangesAsync();
 
-            return Ok(await CreateResponseAsync(room));
+            return await CreateResponseAsync(room);
         }
 
-        public async Task<ActionResult> DeleteRoomAsync(Guid id)
+        public async Task<Room> DeleteRoomAsync(Guid id)
         {
             Room room = await _context.Rooms.FirstOrDefaultAsync(e => e.Id == id);
 
             if (room == null)
             {
-                return NotFound($"Room with id {id} not found.");
+                throw new NotFoundException($"Room with id {id} not found.");
             }
 
             // Set inactive:
@@ -112,21 +117,14 @@ namespace LocatieService.Services
             _context.Update(room);
             await _context.SaveChangesAsync();
 
-            return NoContent();
+            return room;
         }
 
         private async Task<bool> IsDuplicateAsync(Room room)
         {
-            Room duplicate = await _context.Rooms.FirstOrDefaultAsync(e => e.BuildingId == room.BuildingId
+            return await _context.Rooms.AnyAsync(e => e.BuildingId == room.BuildingId
                 && e.Name == room.Name
                 && e.IsActive);
-
-            if (duplicate != null)
-            {
-                return true;
-            }
-
-            return false;
         }
 
         private async Task<RoomResponse> CreateResponseAsync(Room room)

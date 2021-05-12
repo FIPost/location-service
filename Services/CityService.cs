@@ -28,9 +28,8 @@ namespace LocatieService.Services
         {
             // Check if city is a duplicate:
             City city = _converter.DtoToModel(request);
-            City duplicate = await _context.Cities.FirstOrDefaultAsync(e => e.Name == city.Name && e.IsActive);
 
-            if (duplicate != null)
+            if (await IsDuplicate(city.Name))
             {
                 throw new DuplicateException($"City with name {city.Name} already exists.");
             }
@@ -73,16 +72,14 @@ namespace LocatieService.Services
         public async Task<City> UpdateAsync(Guid id, CityRequest request)
         {
             City city = _converter.DtoToModel(request);
+            city.Id = id;
 
-            if (!await _context.Cities.AnyAsync(e => e.Id == id))
+            if (!await _context.Cities.AnyAsync(e => e.Id == city.Id))
             {
                 throw new NotFoundException($"Could not find city with id {id}.");
             }
 
-            city.Id = id;
-            City duplicate = await _context.Cities.FirstOrDefaultAsync(e => e.Name == city.Name && e.IsActive && e.Id != city.Id);
-
-            if (duplicate != null)
+            if (await IsDuplicate(city.Name, city.Id))
             {
                 throw new DuplicateException($"City with name {city.Name} already exists.");
             }
@@ -132,6 +129,18 @@ namespace LocatieService.Services
             await _context.SaveChangesAsync();
 
             return city;
+        }
+
+        private async Task<bool> IsDuplicate(string name, Guid? id=null)
+        {
+            if (id == null)
+            {
+                return await _context.Cities.AnyAsync(e => e.Name == name && e.IsActive);
+            }
+            else
+            {
+                return await _context.Cities.AnyAsync(e => e.Name == name && e.IsActive && e.Id != id);
+            }
         }
     }
 }
