@@ -41,3 +41,18 @@ Network `ipost-network` declared as external, but could not be found. Run the fo
 ```zsh
 docker network create ipost-network
 ```
+
+## Migration
+
+```bash
+dotnet ef migrations add migrationName
+```
+
+```bash
+dotnet ef database update
+```
+
+### Revert migration
+```bash
+dotnet ef database update targetMigration
+```

@@ -1,8 +1,8 @@
 ﻿#See https://aka.ms/containerfastmode to understand how Visual Studio uses this Dockerfile to build your images for faster debugging.
 
 FROM mcr.microsoft.com/dotnet/core/aspnet:3.1-buster-slim AS base
-ENV ASPNETCORE_ENVIRONMENT="Development"
-ENV ENVIRONMENT="Development"
+ENV ASPNETCORE_ENVIRONMENT="Docker"
+ENV ENVIRONMENT="Docker"
 
 WORKDIR /app
 EXPOSE 5002
