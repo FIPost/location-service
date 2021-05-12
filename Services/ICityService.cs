@@ -9,11 +9,11 @@ namespace LocatieService.Services
 {
     public interface ICityService
     {
-        Task<ActionResult<City>> AddAsync(CityRequest request);
-        Task<ActionResult<List<City>>> GetAllAsync();
-        Task<ActionResult<City>> GetByIdAsync(Guid id);
-        Task<ActionResult<City>> GetByNameAsync(string name);
-        Task<ActionResult<City>> UpdateAsync(Guid id, CityRequest request);
-        Task<ActionResult> DeleteAsync(Guid id);
+        Task<City> AddAsync(CityRequest request);
+        Task<List<City>> GetAllAsync();
+        Task<City> GetByIdAsync(Guid id);
+        Task<City> GetByNameAsync(string name);
+        Task<City> UpdateAsync(Guid id, CityRequest request);
+        Task<City> DeleteAsync(Guid id);
     }
 }

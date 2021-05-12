@@ -2,6 +2,7 @@
 using LocatieService.Database.Converters;
 using LocatieService.Database.Datamodels;
 using LocatieService.Database.Datamodels.Dtos;
+using LocatieService.helpers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -11,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace LocatieService.Services
 {
-    public class CityService : Controller, ICityService
+    public class CityService : ICityService
     {
         private readonly LocatieContext _context;
         private readonly IDtoConverter<City, CityRequest, CityResponse> _converter;
@@ -23,7 +24,7 @@ namespace LocatieService.Services
             _converter = converter;
         }
 
-        public async Task<ActionResult<City>> AddAsync(CityRequest request)
+        public async Task<City> AddAsync(CityRequest request)
         {
             // Check if city is a duplicate:
             City city = _converter.DtoToModel(request);
@@ -31,62 +32,74 @@ namespace LocatieService.Services
 
             if (duplicate != null)
             {
-                return Conflict($"City with name {city.Name} already exists.");
+                throw new DuplicateException($"City with name {city.Name} already exists.");
             }
 
             await _context.AddAsync(city);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("AddCity", city);
+            return city;
         }
 
-        public async Task<ActionResult<List<City>>> GetAllAsync()
+        public async Task<List<City>> GetAllAsync()
         {
             return await _context.Cities.Where(e => e.IsActive).ToListAsync();
         }
 
-        public async Task<ActionResult<City>> GetByIdAsync(Guid id)
+        public async Task<City> GetByIdAsync(Guid id)
         {
             City city = await _context.Cities.FirstOrDefaultAsync(e => e.Id == id);
 
             if (city == null)
             {
-                return NotFound($"Could not find city with id {id}.");
+                throw new NotFoundException($"Could not find city with id {id}.");
             }
 
-            return Ok(city);
+            return city;
         }
 
-        public async Task<ActionResult<City>> GetByNameAsync(string name)
+        public async Task<City> GetByNameAsync(string name)
         {
-            City city = await _context.Cities.FirstOrDefaultAsync(e => e.Name == name);
+            City city = await _context.Cities.FirstOrDefaultAsync(e => e.Name == name && e.IsActive);
 
             if (city == null)
             {
-                return NotFound($"Could not find city with name {name}.");
+                throw new NotFoundException($"Could not find city with name {name}.");
             }
 
-            return Ok(city);
+            return city;
         }
 
-        public async Task<ActionResult<City>> UpdateAsync(Guid id, CityRequest request)
+        public async Task<City> UpdateAsync(Guid id, CityRequest request)
         {
             City city = _converter.DtoToModel(request);
+
+            if (!await _context.Cities.AnyAsync(e => e.Id == id))
+            {
+                throw new NotFoundException($"Could not find city with id {id}.");
+            }
+
             city.Id = id;
+            City duplicate = await _context.Cities.FirstOrDefaultAsync(e => e.Name == city.Name && e.IsActive && e.Id != city.Id);
+
+            if (duplicate != null)
+            {
+                throw new DuplicateException($"City with name {city.Name} already exists.");
+            }
 
             _context.Update(city);
             await _context.SaveChangesAsync();
 
-            return Ok(city);
+            return city;
         }
 
-        public async Task<ActionResult> DeleteAsync(Guid id)
+        public async Task<City> DeleteAsync(Guid id)
         {
             City city = await _context.Cities.FirstOrDefaultAsync(e => e.Id == id);
 
             if (city == null)
             {
-                return NotFound($"Could not find city with id {id}.");
+                throw new NotFoundException($"Could not find city with id {id}.");
             }
 
             // Set inactive:
@@ -118,7 +131,7 @@ namespace LocatieService.Services
             _context.Update(city);
             await _context.SaveChangesAsync();
 
-            return NoContent();
+            return city;
         }
     }
 }
