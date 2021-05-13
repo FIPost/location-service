@@ -1,5 +1,6 @@
 ﻿using LocatieService.Database.Datamodels;
 using LocatieService.Database.Datamodels.Dtos;
+using LocatieService.helpers;
 using LocatieService.Services;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -22,41 +23,81 @@ namespace LocatieService.Controllers
         [HttpPost]
         public async Task<ActionResult<BuildingResponse>> AddBuilding(BuildingRequest request)
         {
-            return await _service.AddAsync(request);
+            try
+            {
+                return Ok(await _service.AddAsync(request));
+            }
+            catch (DuplicateException e)
+            {
+                return Conflict(e.Message);
+            }
         }
 
         [HttpGet]
         public async Task<ActionResult<List<BuildingResponse>>> GetAllBuildings()
         {
-            return await _service.GetAllAsync();
+            return Ok(await _service.GetAllAsync());
         }
 
         [HttpGet]
         [Route("{id}")]
         public async Task<ActionResult<BuildingResponse>> GetBuildingById(Guid id)
         {
-            return await _service.GetByIdAsync(id);
+            try
+            {
+                return Ok(await _service.GetByIdAsync(id));
+            }
+            catch (NotFoundException e)
+            {
+                return NotFound(e.Message);
+            }
         }
 
         [HttpGet]
         [Route("name/{name}")]
         public async Task<ActionResult<BuildingResponse>> GetBuildingByName(string name)
         {
-            return await _service.GetByNameAsync(name);
+            try
+            {
+                return Ok(await _service.GetByNameAsync(name));
+            }
+            catch (NotFoundException e)
+            {
+                return NotFound(e.Message);
+            }
         }
 
         [HttpPut]
         [Route("{id}")]
         public async Task<ActionResult<BuildingResponse>> UpdateBuilding(Guid id, BuildingRequest request)
         {
-            return await _service.UpdateAsync(id, request);
+            try
+            {
+                return Ok(await _service.UpdateAsync(id, request));
+            }
+            catch (DuplicateException e)
+            {
+                return Conflict(e.Message);
+            }
+            catch (NotFoundException e)
+            {
+                return NotFound(e.Message);
+            }
         }
 
         [HttpDelete]
         [Route("{id}")]
         public async Task<ActionResult<Building>> DeleteBuildingById(Guid id)
         {
-            return await _service.DeleteAsync(id);
+            try
+            {
+                await _service.DeleteAsync(id);
+                return NoContent();
+            }
+            catch (NotFoundException e)
+            {
+                return NotFound(e.Message);
+            }
         }
     }
 }

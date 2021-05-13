@@ -90,7 +90,7 @@ namespace LocatieService.Services
                 throw new DuplicateException($"Room with id {id} not found.");
             }
 
-            if (await IsDuplicateAsync(room))
+            if (await IsDuplicateAsync(room, id))
             {
                 throw new DuplicateException("This room already exists.");
             }
@@ -120,11 +120,20 @@ namespace LocatieService.Services
             return room;
         }
 
-        private async Task<bool> IsDuplicateAsync(Room room)
+        private async Task<bool> IsDuplicateAsync(Room room, Guid? id=null)
         {
-            return await _context.Rooms.AnyAsync(e => e.BuildingId == room.BuildingId
-                && e.Name == room.Name
-                && e.IsActive);
+            if (id == null)
+            {
+                return await _context.Rooms.AnyAsync(e => e.BuildingId == room.BuildingId
+                    && e.Name == room.Name
+                    && e.IsActive);
+            }
+            else
+            {
+                return await _context.Rooms.AnyAsync(e => e.BuildingId == room.BuildingId
+                    && e.Name == room.Name
+                    && e.IsActive && e.Id != id);
+            }
         }
 
         private async Task<RoomResponse> CreateResponseAsync(Room room)
