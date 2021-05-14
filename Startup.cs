@@ -2,13 +2,13 @@ using LocatieService.Database.Contexts;
 using LocatieService.Database.Converters;
 using LocatieService.Database.Datamodels;
 using LocatieService.Database.Datamodels.Dtos;
+using LocatieService.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.OpenApi.Models;
 
 namespace LocatieService
 {
@@ -34,10 +34,7 @@ namespace LocatieService
             services.AddControllers().AddNewtonsoftJson(options =>
                 options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
 
-            services.AddSwaggerGen(c =>
-            {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "LocatieService", Version = "v1" });
-            });
+            services.AddSwaggerGen();
 
             services.AddCors(options =>
             {
@@ -55,6 +52,11 @@ namespace LocatieService
             services.AddScoped<IDtoConverter<City, CityRequest, CityResponse>, CityDtoConverter>();
             services.AddScoped<IDtoConverter<Building, BuildingRequest, BuildingResponse>, BuildingDtoConverter>();
             services.AddScoped<IDtoConverter<Room, RoomRequest, RoomResponse>, RoomDtoConverter>();
+
+            //Inject services.
+            services.AddTransient<ICityService, CityService>();
+            services.AddTransient<IBuildingService, BuildingService>();
+            services.AddTransient<IRoomService, RoomService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -70,9 +72,6 @@ namespace LocatieService
 
             app.UseCors(MyAllowSpecificOrigins);
 
-            app.UseSwagger();
-            app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "LocatieService v1"));
-
             app.UseHttpsRedirection();
 
             app.UseRouting();
@@ -82,6 +81,21 @@ namespace LocatieService
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+            });
+
+            // Enable middleware to serve generated Swagger as a JSON endpoint.
+            app.UseSwagger(c =>
+            {
+                c.SerializeAsV2 = true;
+            });
+
+            // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.),
+            // specifying the Swagger JSON endpoint.
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "LocatieService");
+                // Serve the swagger UI at the app's root
+                c.RoutePrefix = string.Empty;
             });
         }
     }
