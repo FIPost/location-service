@@ -8,5 +8,6 @@ namespace LocatieService.Database.Datamodels
         public Guid Id { get; set; }
         public string Name { get; set; }
         public Guid BuildingId { get; set; }
+        public bool IsActive { get; set; } = true;
     }
 }
