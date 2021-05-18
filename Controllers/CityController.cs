@@ -100,5 +100,12 @@ namespace LocatieService.Controllers
                 return NotFound(e.Message);
             }
         }
+
+        [HttpGet]
+        [Route("health")]
+        public ActionResult Health()
+        {
+            return Ok();
+        }
     }
 }
