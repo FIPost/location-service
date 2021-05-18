@@ -5,6 +5,7 @@ using LocatieService.Database.Datamodels.Dtos;
 using LocatieService.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -25,6 +26,8 @@ namespace LocatieService
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.Configure<KestrelServerOptions>(
+            Configuration.GetSection("Kestrel"));
             var connection = Configuration.GetValue<string>("ConnectionString");
 
             // Add context
