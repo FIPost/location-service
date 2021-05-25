@@ -1,7 +1,6 @@
-﻿using LocatieService.Database.Converters;
-using LocatieService.Database.Datamodels;
+﻿using LocatieService.Database.Datamodels;
 using LocatieService.Database.Datamodels.Dtos;
-using LocatieService.helpers;
+using LocatieService.Helpers;
 using LocatieService.Services;
 using Microsoft.AspNetCore.Mvc;
 using System;

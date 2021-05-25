@@ -2,8 +2,7 @@
 using LocatieService.Database.Converters;
 using LocatieService.Database.Datamodels;
 using LocatieService.Database.Datamodels.Dtos;
-using LocatieService.helpers;
-using Microsoft.AspNetCore.Mvc;
+using LocatieService.Helpers;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;

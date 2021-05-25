@@ -2,8 +2,7 @@
 using LocatieService.Database.Converters;
 using LocatieService.Database.Datamodels;
 using LocatieService.Database.Datamodels.Dtos;
-using LocatieService.helpers;
-using Microsoft.AspNetCore.Mvc;
+using LocatieService.Helpers;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -24,7 +23,7 @@ namespace LocatieService.Services
             _converter = converter;
         }
 
-        public async Task<City> AddAsync(CityRequest request)
+        public async Task<CityResponse> AddAsync(CityRequest request)
         {
             // Check if city is a duplicate:
             City city = _converter.DtoToModel(request);
@@ -37,15 +36,15 @@ namespace LocatieService.Services
             await _context.AddAsync(city);
             await _context.SaveChangesAsync();
 
-            return city;
+            return _converter.ModelToDto(city);
         }
 
-        public async Task<List<City>> GetAllAsync()
+        public async Task<List<CityResponse>> GetAllAsync()
         {
-            return await _context.Cities.Where(e => e.IsActive).ToListAsync();
+            return _converter.ModelToDto(await _context.Cities.Where(e => e.IsActive).ToListAsync());
         }
 
-        public async Task<City> GetByIdAsync(Guid id)
+        public async Task<CityResponse> GetByIdAsync(Guid id)
         {
             City city = await _context.Cities.FirstOrDefaultAsync(e => e.Id == id);
 
@@ -54,10 +53,10 @@ namespace LocatieService.Services
                 throw new NotFoundException($"Could not find city with id {id}.");
             }
 
-            return city;
+            return _converter.ModelToDto(city);
         }
 
-        public async Task<City> GetByNameAsync(string name)
+        public async Task<CityResponse> GetByNameAsync(string name)
         {
             City city = await _context.Cities.FirstOrDefaultAsync(e => e.Name == name && e.IsActive);
 
@@ -66,10 +65,10 @@ namespace LocatieService.Services
                 throw new NotFoundException($"Could not find city with name {name}.");
             }
 
-            return city;
+            return _converter.ModelToDto(city);
         }
 
-        public async Task<City> UpdateAsync(Guid id, CityRequest request)
+        public async Task<CityResponse> UpdateAsync(Guid id, CityRequest request)
         {
             City city = _converter.DtoToModel(request);
             city.Id = id;
@@ -87,10 +86,10 @@ namespace LocatieService.Services
             _context.Update(city);
             await _context.SaveChangesAsync();
 
-            return city;
+            return _converter.ModelToDto(city);
         }
 
-        public async Task<City> DeleteAsync(Guid id)
+        public async Task<CityResponse> DeleteAsync(Guid id)
         {
             City city = await _context.Cities.FirstOrDefaultAsync(e => e.Id == id);
 
@@ -128,7 +127,7 @@ namespace LocatieService.Services
             _context.Update(city);
             await _context.SaveChangesAsync();
 
-            return city;
+            return _converter.ModelToDto(city);
         }
 
         private async Task<bool> IsDuplicate(string name, Guid? id=null)
