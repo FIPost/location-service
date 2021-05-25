@@ -10,12 +10,14 @@ using System.Threading.Tasks;
 
 namespace LocatieService.Test
 {
-    public class Tests
+    [TestFixture]
+    public class CityTests
     {
         private Mock<ICityService> serviceMock;
 
         private City city;
-        private CityRequest request;
+        private CityRequest cityRequest;
+        private CityResponse cityResponse;
 
         [SetUp]
         public void Setup()
@@ -28,7 +30,13 @@ namespace LocatieService.Test
             {
                 Name = "Test"
             };
-            request = new CityRequest
+            
+            cityRequest = new CityRequest
+            {
+                Name = "Test"
+            };
+
+            cityResponse = new CityResponse
             {
                 Name = "Test"
             };
@@ -38,22 +46,22 @@ namespace LocatieService.Test
         public async Task AddCityTest()
         {
             // Arrange
-            serviceMock.Setup(x => x.AddAsync(request)).Returns(Task.FromResult(city));
+            serviceMock.Setup(x => x.AddAsync(cityRequest)).Returns(Task.FromResult(cityResponse));
             var controller = new CityController(serviceMock.Object);
 
             // Act
-            var result = await controller.AddCity(request);
+            var result = await controller.AddCity(cityRequest);
 
             // Assert
             Assert.IsNotNull(result);
-            Assert.IsInstanceOf<ActionResult<City>>(result);
+            Assert.IsInstanceOf<ActionResult<CityResponse>>(result);
         }
 
         [Test]
         public async Task GetCityByIdTest()
         {
             // Arrange
-            serviceMock.Setup(x => x.GetByIdAsync(new Guid())).Returns(Task.FromResult(city));
+            serviceMock.Setup(x => x.GetByIdAsync(new Guid())).Returns(Task.FromResult(cityResponse));
             var controller = new CityController(serviceMock.Object);
 
             // Act
@@ -61,7 +69,7 @@ namespace LocatieService.Test
 
             // Assert
             Assert.IsNotNull(result);
-            Assert.IsInstanceOf<ActionResult<City>>(result);
+            Assert.IsInstanceOf<ActionResult<CityResponse>>(result);
         }
     }
 }
