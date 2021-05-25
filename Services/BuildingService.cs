@@ -100,7 +100,7 @@ namespace LocatieService.Services
             return await CreateResponseAsync(building);
         }
 
-        public async Task<Building> DeleteAsync(Guid id)
+        public async Task<BuildingResponse> DeleteAsync(Guid id)
         {
             Building building = await _context.Buildings.FirstOrDefaultAsync(e => e.Id == id);
 
@@ -128,7 +128,7 @@ namespace LocatieService.Services
             _context.Update(building);
             await _context.SaveChangesAsync();
 
-            return building;
+            return await CreateResponseAsync(building);
         }
 
         private async Task<bool> IsDuplicateAsync(Building building, Guid? id=null)
