@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 namespace LocatieService.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/buildings")]
     public class BuildingController : Controller
     {
         private readonly IBuildingService _service;
