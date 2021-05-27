@@ -86,7 +86,7 @@ namespace LocatieService.Controllers
 
         [HttpDelete]
         [Route("{id}")]
-        public async Task<ActionResult> DeleteRoomById(Guid id)
+        public async Task<ActionResult<RoomResponse>> DeleteRoomById(Guid id)
         {
             try
             {
