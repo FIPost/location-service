@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 namespace LocatieService.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/cities")]
     public class CityController : Controller
     {
         private readonly ICityService _service;
@@ -98,6 +98,13 @@ namespace LocatieService.Controllers
             {
                 return NotFound(e.Message);
             }
+        }
+
+        [HttpGet]
+        [Route("health")]
+        public ActionResult Health()
+        {
+            return Ok();
         }
     }
 }

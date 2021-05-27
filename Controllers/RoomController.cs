@@ -1,5 +1,5 @@
 ﻿using LocatieService.Database.Datamodels.Dtos;
-using LocatieService.Helpers;
+using LocatieService.helpers;
 using LocatieService.Services;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace LocatieService.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/rooms")]
     public class RoomController : Controller
     {
         private readonly IRoomService _service;

@@ -139,6 +139,7 @@ namespace LocatieService.Services
                     e => e.Name == building.Name
                     && e.Address.PostalCode == building.Address.PostalCode
                     && e.Address.Street == building.Address.Street
+                    && e.Address.Number == building.Address.Number
                     && e.IsActive);
             }
             else
@@ -147,6 +148,8 @@ namespace LocatieService.Services
                     e => e.Name == building.Name
                     && e.Address.PostalCode == building.Address.PostalCode
                     && e.Address.Street == building.Address.Street
+                    && e.Address.Number == building.Address.Number
+                    && e.Address.Addition == building.Address.Addition
                     && e.IsActive && e.Id != id);
             }
         }
