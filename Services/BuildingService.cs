@@ -41,7 +41,7 @@ namespace LocatieService.Services
         public async Task<List<BuildingResponse>> GetAllAsync()
         {
             List<Building> buildings = await _context.Buildings.Where(e => e.IsActive).ToListAsync();
-            List<BuildingResponse> responses = new();
+            List<BuildingResponse> responses = new List<BuildingResponse>();
 
             // Add cities:
             foreach (Building building in buildings)

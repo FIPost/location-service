@@ -25,7 +25,7 @@ namespace LocatieService.Database.Converters
 
         public List<CityResponse> ModelToDto(List<City> models)
         {
-            List<CityResponse> responseDtos = new();
+            List<CityResponse> responseDtos = new List<CityResponse>();
 
             foreach (City city in models)
             {

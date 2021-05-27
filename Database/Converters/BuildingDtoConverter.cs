@@ -36,7 +36,7 @@ namespace LocatieService.Database.Converters
 
         public List<BuildingResponse> ModelToDto(List<Building> models)
         {
-            List<BuildingResponse> responseDtos = new();
+            List<BuildingResponse> responseDtos = new List<BuildingResponse>();
 
             foreach (Building building in models)
             {
