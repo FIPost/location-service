@@ -170,7 +170,7 @@ namespace LocatieService.Test
         [Test]
         public async Task DeleteBuilding_NoContent()
         {
-            serviceMock.Setup(x => x.DeleteAsync(new Guid())).ReturnsAsync(buildingResponse1);
+            serviceMock.Setup(x => x.DeleteAsync(new Guid())).ReturnsAsync(new BuildingResponse());
             var controller = new BuildingController(serviceMock.Object);
             var actionResult = await controller.DeleteBuildingById(new Guid());
             Assert.IsNotNull(actionResult);
