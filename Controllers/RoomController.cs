@@ -1,4 +1,4 @@
-﻿using LocatieService.Database.Datamodels.Dtos;
+using LocatieService.Database.Datamodels.Dtos;
 using LocatieService.Services;
 using Microsoft.AspNetCore.Mvc;
 using System;

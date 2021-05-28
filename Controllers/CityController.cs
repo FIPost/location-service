@@ -1,4 +1,4 @@
-﻿using LocatieService.Database.Datamodels;
+using LocatieService.Database.Datamodels;
 using LocatieService.Database.Datamodels.Dtos;
 using LocatieService.Helpers;
 using LocatieService.Services;
