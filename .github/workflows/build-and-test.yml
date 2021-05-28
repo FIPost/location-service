@@ -15,18 +15,6 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Setup dotnet
-        uses: actions/setup-dotnet@v1.7.2
-        with:
-          dotnet-version: '3.1.x'
-  
-      - uses: microsoft/variable-substitution@v1 
-        with:
-            files: 'appsettings.json'
-        env:
-            ConnectionString: "${{ secrets.DATABASE_CONNECTION }}"
-          
-      - uses: actions/checkout@v2
-      - name: Setup dotnet
         uses: actions/setup-dotnet@v1
         with:
           dotnet-version: ${{ matrix.dotnet }}
