@@ -1,6 +1,10 @@
-﻿using LocatieService.Database.Datamodels;
+
+using LocatieService.Database.Datamodels;
 using LocatieService.Database.Datamodels.Dtos;
 using LocatieService.Helpers;
+using LocatieService.Database.Converters;
+using LocatieService.Database.Datamodels;
+using LocatieService.Database.Datamodels.Dtos;
 using LocatieService.Services;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -34,14 +38,14 @@ namespace LocatieService.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<CityResponse>>> GetAllCities()
+        public async Task<ActionResult<List<City>>> GetAllCities()
         {
             return Ok(await _service.GetAllAsync());
         }
 
         [HttpGet]
         [Route("{id}")]
-        public async Task<ActionResult<CityResponse>> GetCityById(Guid id)
+        public async Task<ActionResult<City>> GetCityById(Guid id)
         {
             try
             {
@@ -55,7 +59,7 @@ namespace LocatieService.Controllers
 
         [HttpGet]
         [Route("name/{name}")]
-        public async Task<ActionResult<CityResponse>> GetCityByName(string name)
+        public async Task<ActionResult<City>> GetCityByName(string name)
         {
             try
             {
