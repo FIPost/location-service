@@ -14,6 +14,6 @@ namespace LocatieService.Services
         Task<RoomResponse> GetByIdAsync(Guid id);
         Task<RoomResponse> GetByNameAsync(string name);
         Task<RoomResponse> UpdateAsync(Guid id, RoomRequest request);
-        Task<Room> DeleteRoomAsync(Guid id);
+        Task<RoomResponse> DeleteRoomAsync(Guid id);
     }
 }

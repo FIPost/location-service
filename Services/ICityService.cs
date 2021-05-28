@@ -1,6 +1,4 @@
-﻿using LocatieService.Database.Datamodels;
-using LocatieService.Database.Datamodels.Dtos;
-using Microsoft.AspNetCore.Mvc;
+﻿using LocatieService.Database.Datamodels.Dtos;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -9,11 +7,11 @@ namespace LocatieService.Services
 {
     public interface ICityService
     {
-        Task<City> AddAsync(CityRequest request);
-        Task<List<City>> GetAllAsync();
-        Task<City> GetByIdAsync(Guid id);
-        Task<City> GetByNameAsync(string name);
-        Task<City> UpdateAsync(Guid id, CityRequest request);
-        Task<City> DeleteAsync(Guid id);
+        Task<CityResponse> AddAsync(CityRequest request);
+        Task<List<CityResponse>> GetAllAsync();
+        Task<CityResponse> GetByIdAsync(Guid id);
+        Task<CityResponse> GetByNameAsync(string name);
+        Task<CityResponse> UpdateAsync(Guid id, CityRequest request);
+        Task<CityResponse> DeleteAsync(Guid id);
     }
 }

@@ -1,4 +1,4 @@
-name: Build .NET API
+name: Test .NET API
 on:
   push:
     branches: [ master ]
@@ -6,12 +6,12 @@ on:
     types: [opened, synchronize, reopened]
  
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
     strategy:
       matrix:
         dotnet: ['3.1.x']
-    name: Dotnet ${{ matrix.dotnet }} build
+    name: Dotnet ${{ matrix.dotnet }} test
     steps:
       - uses: actions/checkout@v2
       - name: Setup dotnet
@@ -30,4 +30,4 @@ jobs:
         uses: actions/setup-dotnet@v1
         with:
           dotnet-version: ${{ matrix.dotnet }}
-      - run: dotnet build
+      - run: dotnet test

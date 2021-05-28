@@ -1,10 +1,10 @@
 ﻿using LocatieService.Database.Datamodels.Dtos;
-using LocatieService.helpers;
 using LocatieService.Services;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using LocatieService.Helpers;
 
 namespace LocatieService.Controllers
 {
@@ -86,7 +86,7 @@ namespace LocatieService.Controllers
 
         [HttpDelete]
         [Route("{id}")]
-        public async Task<ActionResult> DeleteRoomById(Guid id)
+        public async Task<ActionResult<RoomResponse>> DeleteRoomById(Guid id)
         {
             try
             {

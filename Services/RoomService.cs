@@ -2,8 +2,7 @@
 using LocatieService.Database.Converters;
 using LocatieService.Database.Datamodels;
 using LocatieService.Database.Datamodels.Dtos;
-using LocatieService.helpers;
-using Microsoft.AspNetCore.Mvc;
+using LocatieService.Helpers;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -45,7 +44,7 @@ namespace LocatieService.Services
         public async Task<List<RoomResponse>> GetAllAsync()
         {
             List<Room> rooms = await _context.Rooms.Where(e => e.IsActive).ToListAsync();
-            List<RoomResponse> responses = new();
+            List<RoomResponse> responses = new List<RoomResponse>();
 
             // Add buildings:
             foreach (Room room in rooms)
@@ -101,7 +100,7 @@ namespace LocatieService.Services
             return await CreateResponseAsync(room);
         }
 
-        public async Task<Room> DeleteRoomAsync(Guid id)
+        public async Task<RoomResponse> DeleteRoomAsync(Guid id)
         {
             Room room = await _context.Rooms.FirstOrDefaultAsync(e => e.Id == id);
 
@@ -117,7 +116,7 @@ namespace LocatieService.Services
             _context.Update(room);
             await _context.SaveChangesAsync();
 
-            return room;
+            return await CreateResponseAsync(room);
         }
 
         private async Task<bool> IsDuplicateAsync(Room room, Guid? id=null)
