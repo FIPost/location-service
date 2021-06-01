@@ -28,7 +28,7 @@ namespace LocatieService.Database.Converters
 
         public List<RoomResponse> ModelToDto(List<Room> models)
         {
-            List<RoomResponse> responseDtos = new();
+            List<RoomResponse> responseDtos = new List<RoomResponse>();
 
             foreach (Room room in models)
             {

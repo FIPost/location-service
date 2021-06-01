@@ -1,6 +1,5 @@
-﻿using LocatieService.Database.Datamodels;
+using LocatieService.Database.Datamodels;
 using LocatieService.Database.Datamodels.Dtos;
-using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -14,6 +13,6 @@ namespace LocatieService.Services
         Task<BuildingResponse> GetByIdAsync(Guid id);
         Task<BuildingResponse> GetByNameAsync(string name);
         Task<BuildingResponse> UpdateAsync(Guid id, BuildingRequest request);
-        Task<Building> DeleteAsync(Guid id);
+        Task<BuildingResponse> DeleteAsync(Guid id);
     }
 }

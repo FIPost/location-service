@@ -1,6 +1,6 @@
-﻿using LocatieService.Database.Datamodels;
+using LocatieService.Database.Datamodels;
 using LocatieService.Database.Datamodels.Dtos;
-using LocatieService.helpers;
+using LocatieService.Helpers;
 using LocatieService.Services;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 namespace LocatieService.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/buildings")]
     public class BuildingController : Controller
     {
         private readonly IBuildingService _service;
@@ -87,7 +87,7 @@ namespace LocatieService.Controllers
 
         [HttpDelete]
         [Route("{id}")]
-        public async Task<ActionResult<Building>> DeleteBuildingById(Guid id)
+        public async Task<ActionResult<BuildingResponse>> DeleteBuildingById(Guid id)
         {
             try
             {

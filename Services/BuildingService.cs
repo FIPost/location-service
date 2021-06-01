@@ -1,9 +1,8 @@
-﻿using LocatieService.Database.Contexts;
+using LocatieService.Database.Contexts;
 using LocatieService.Database.Converters;
 using LocatieService.Database.Datamodels;
 using LocatieService.Database.Datamodels.Dtos;
-using LocatieService.helpers;
-using Microsoft.AspNetCore.Mvc;
+using LocatieService.Helpers;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -42,7 +41,7 @@ namespace LocatieService.Services
         public async Task<List<BuildingResponse>> GetAllAsync()
         {
             List<Building> buildings = await _context.Buildings.Where(e => e.IsActive).ToListAsync();
-            List<BuildingResponse> responses = new();
+            List<BuildingResponse> responses = new List<BuildingResponse>();
 
             // Add cities:
             foreach (Building building in buildings)
@@ -101,7 +100,7 @@ namespace LocatieService.Services
             return await CreateResponseAsync(building);
         }
 
-        public async Task<Building> DeleteAsync(Guid id)
+        public async Task<BuildingResponse> DeleteAsync(Guid id)
         {
             Building building = await _context.Buildings.FirstOrDefaultAsync(e => e.Id == id);
 
@@ -129,7 +128,7 @@ namespace LocatieService.Services
             _context.Update(building);
             await _context.SaveChangesAsync();
 
-            return building;
+            return await CreateResponseAsync(building);
         }
 
         private async Task<bool> IsDuplicateAsync(Building building, Guid? id=null)
