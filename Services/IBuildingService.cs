@@ -1,4 +1,4 @@
-﻿using LocatieService.Database.Datamodels;
+using LocatieService.Database.Datamodels;
 using LocatieService.Database.Datamodels.Dtos;
 using System;
 using System.Collections.Generic;
