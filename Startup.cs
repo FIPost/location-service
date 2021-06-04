@@ -31,7 +31,7 @@ namespace LocatieService
             var connection = Configuration.GetValue<string>("ConnectionString");
 
             // Add context
-            services.AddDbContext<LocatieContext>(
+            services.AddDbContextPool<LocatieContext>(
                 options => options.UseSqlServer(connection));
 
             services.AddControllers().AddNewtonsoftJson(options =>
