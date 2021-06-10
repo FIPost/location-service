@@ -1,3 +1,5 @@
+# Local Kubernetes
+appsettings.k8s.json
 
 # Created by https://www.toptal.com/developers/gitignore/api/macos,vuejs,intellij,visualstudio
 # Edit at https://www.toptal.com/developers/gitignore?templates=macos,vuejs,intellij,visualstudio
