@@ -10,6 +10,7 @@ namespace LocatieService.Services
     {
         Task<BuildingResponse> AddAsync(BuildingRequest request);
         Task<List<BuildingResponse>> GetAllAsync();
+        Task<List<BuildingResponse>> GetAllByCityAsync(Guid id);
         Task<BuildingResponse> GetByIdAsync(Guid id);
         Task<BuildingResponse> GetByNameAsync(string name);
         Task<BuildingResponse> UpdateAsync(Guid id, BuildingRequest request);
