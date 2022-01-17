@@ -55,6 +55,31 @@ namespace LocatieService.Services
             return responses;
         }
 
+        public async Task<List<BuildingResponse>> GetAllByCityAsync(Guid cityId)
+        {
+            // Get buildings in the city
+            List<Building> buildings = await _context.Buildings.Where(e => e.Address.CityId == cityId).ToListAsync();
+            List<BuildingResponse> responses = new List<BuildingResponse>();
+            responses.Clear();
+
+            if (buildings == null)
+            {
+                throw new NotFoundException($"Buildings with city {cityId} not found.");
+            }
+            else
+            {
+                foreach (Building building in buildings)
+                {
+                    BuildingResponse response = _converter.ModelToDto(building);
+                    response.Address.City = await _context.Cities.FirstOrDefaultAsync(e => e.Id == building.Address.CityId);
+
+                    responses.Add(response);
+                }
+            }            
+
+            return responses;
+        }
+
         public async Task<BuildingResponse> GetByIdAsync(Guid id)
         {
             Building building = await _context.Buildings.FirstOrDefaultAsync(e => e.Id == id);

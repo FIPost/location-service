@@ -22,6 +22,7 @@ namespace LocatieService.Test
         private BuildingRequest buildingRequest2;
         private BuildingResponse buildingResponse1;
         private BuildingResponse buildingResponse2;
+        private AddressResponse addressResponse1;
         private readonly List<BuildingResponse> buildingResponses = new List<BuildingResponse>();
 
         [SetUp]
@@ -48,7 +49,17 @@ namespace LocatieService.Test
             buildingResponse2 = new BuildingResponse
             {
                 Id = new Guid(),
+                Address = addressResponse1,
                 Name = "Building_2"
+            };
+
+            addressResponse1 = new AddressResponse
+            {
+                City = new City
+                {
+                    Id = new Guid(),
+                    Name = "City_1"
+                }
             };
 
             buildingResponses.Clear();
@@ -92,6 +103,27 @@ namespace LocatieService.Test
             Assert.IsNotNull(actionResult);
             Assert.IsInstanceOf<OkObjectResult>(actionResult.Result);
             Assert.AreEqual(buildingResponses, GetObjectResultContent(actionResult));
+        }
+
+        [Test]
+        public async Task GetAllBuildingsByCityId_Ok()
+        {
+            serviceMock.Setup(x => x.GetAllByCityAsync(buildingResponse2.Address.City.Id)).ReturnsAsync(buildingResponses);
+            var controller = new BuildingController(serviceMock.Object);
+            var actionResult = await controller.GetAllBuildingsByCity(buildingResponse2.Address.City.Id);
+            Assert.IsNotNull(actionResult);
+            Assert.IsInstanceOf<OkObjectResult>(actionResult.Result);
+            Assert.AreEqual(buildingResponses, GetObjectResultContent(actionResult));
+        }
+
+        [Test]
+        public async Task GetAllBuildingsByCityId_NotFound()
+        {
+            serviceMock.Setup(x => x.GetAllByCityAsync(buildingResponse2.Address.City.Id)).Throws<NotFoundException>();
+            var controller = new BuildingController(serviceMock.Object);
+            var actionResult = await controller.GetAllBuildingsByCity(buildingResponse2.Address.City.Id);
+            Assert.IsNotNull(actionResult);
+            Assert.IsInstanceOf<NotFoundObjectResult>(actionResult.Result);
         }
 
         [Test]

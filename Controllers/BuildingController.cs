@@ -40,6 +40,20 @@ namespace LocatieService.Controllers
         }
 
         [HttpGet]
+        [Route("city/{cityId}")]
+        public async Task<ActionResult<List<BuildingResponse>>> GetAllBuildingsByCity(Guid cityId)
+        {
+            try
+            {
+                return Ok(await _service.GetAllByCityAsync(cityId));
+            }
+            catch (NotFoundException e)
+            {
+                return NotFound(e.Message);
+            }
+        }
+
+        [HttpGet]
         [Route("{id}")]
         public async Task<ActionResult<BuildingResponse>> GetBuildingById(Guid id)
         {
