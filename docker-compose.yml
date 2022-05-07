@@ -17,7 +17,7 @@ services:
           - location_volume:/var/opt/mssql
 
         environment:
-            SA_PASSWORD: "Your_password123"
+            SA_PASSWORD: "Semester6"
             ACCEPT_EULA: "Y"
         ports:
             - "1433"
